@@ -1,0 +1,163 @@
+<canvas id="gc" width="1800" height="1000"></canvas>
+<script>
+window.onload=function() {
+
+
+
+	canv=document.getElementById("gc");
+	ctx=canv.getContext("2d");
+	document.addEventListener("keydown", keyPush);
+	colorRect(0,0, canv.width, canv.height,'skyblue');
+	
+	xpos=canv.width/2;
+	ypos=canv.height/2;
+
+	setInterval(function() {
+				
+				draw();
+				},
+				1000/60);
+	
+}
+
+
+
+
+
+var canv;
+var ctx;
+var count=0;
+var nextnum=0;
+var currentnum=0;
+var prevnum=1;
+var xpos;	//	position of the rectangles starting in the center
+var ypos;	// 	position of the rectangles starting in the center
+var col='green';	// 	color of squares
+var count2=0;
+
+
+
+
+
+//Function for drawing lines
+
+var line = function (x1, y1, x2, y2)
+{
+ctx.beginPath();
+ctx.moveTo(x1,y1);
+ctx.lineTo(x2,y2);
+ctx.stroke();
+
+
+}
+
+	
+
+function draw(){
+	
+ctx.fillStyle='black';
+	 
+	if(count2+1 < 100)
+{
+	ctx.font = "10px Arial";
+	
+
+	ctx.fillText(currentnum,canv.width-450,count2*9+10);
+	
+}
+count2++;
+
+
+if(count<17){
+//colorRect(xpos, ypos, prevnum, prevnum, col);
+colorRect(xpos, ypos, currentnum, currentnum, col);
+ctx.font = "10px Arial";
+ctx.fillStyle='black';
+ctx.fillText(currentnum, xpos+currentnum/2, ypos+currentnum/2);
+
+}
+
+
+
+nextnum=currentnum+prevnum;
+prevnum=currentnum;
+currentnum=nextnum;
+
+
+count++;
+	
+switch(count%4)
+	{
+	
+	case 2:
+	col='maroon';
+	xpos=xpos+prevnum;
+	ypos=ypos-(currentnum-prevnum);
+	break;
+	case 3:
+	col='blue';
+	xpos=xpos-(currentnum-prevnum);
+	ypos=(ypos-currentnum);
+	break
+	case 0:
+	col='green';
+	xpos=(xpos-currentnum);
+	//ypos=(ypos-currentnum);
+	
+	break;
+	case 1:
+	col='yellow';
+	//xpos=(xpos-currentnum);
+	ypos=ypos+prevnum;
+	
+	break;
+
+	}
+
+
+
+
+
+}	
+
+
+
+
+
+
+function keyPush(evt) {
+
+
+
+
+}
+
+function colorRect(leftX, TopY, width, height, drawColor)
+{
+	
+	ctx.fillStyle= drawColor;
+	ctx.strokeRect(leftX, TopY, width, height);
+	ctx.fillRect(leftX, TopY, width, height);
+	
+}
+
+
+
+function colorCircle(centerX, centerY, radius, ballColor)
+{
+	ctx.fillStyle=ballColor;
+	ctx.beginPath();
+	ctx.arc(centerX, centerY, radius, 0, Math.PI*2, true);
+	ctx.fill();
+
+
+}
+
+
+
+
+
+
+
+
+</script>
