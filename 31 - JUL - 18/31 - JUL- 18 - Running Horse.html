@@ -1,0 +1,202 @@
+<title> Running Horse </title>
+// Objective: Create a running horse <br>
+// Start Time: 1000	<br>
+// End Time: 	1200 <br>
+
+<canvas id="gc" width="1800" height="600"></canvas>
+<script>
+
+var images = new Array();
+function preloader() 
+
+{
+if(preload)
+	{
+     // counter
+     var nextimage="horse";
+
+     // create object
+     imageObj = new Image();
+
+     // set image list
+     //images = new Array();
+	for (var i=0; i<5; i++)
+	{
+	nextimage="./Horse/horse"+i.toString() +".png";
+	//console.log(nextimage);
+     images[i]=nextimage;
+  	}   
+     // start preloading
+     for(i=0; i<5; i++) 
+     {
+          imageObj.src=images[i];
+     }
+
+}
+preload=false;
+} 
+
+
+
+
+
+window.onload=function() {
+
+
+	canv=document.getElementById("gc");
+	ctx=canv.getContext("2d");
+	//canv.addEventListener('mousemove', function(evt){ var mousePos= calculateMousePos(evt);
+							//paddle1Y= mousePos.y-PADDLE_HEIGHT/2;
+							//});
+
+	document.addEventListener("keydown", keyPush);
+
+
+	setInterval(function() {
+				preloader();
+				draw();
+				},
+				1000/20);
+	
+}
+
+function show_image(src, width, height, alt) {
+    var img = document.createElement("img");
+    img.src = src;
+    img.width = width;
+    img.height = height;
+    img.alt = alt;
+
+    // This next line will just add it to the <body> tag
+    //document.body.appendChild(img);
+	ctx.drawImage(src, width, height);
+}
+
+
+
+
+var canv;
+var ctx;
+var preload=true;
+var xpos=0;
+var treex=900;
+
+
+
+
+
+
+
+
+
+
+var keyPush = function(evt){
+switch(evt.keyCode)
+	{
+}
+	
+};
+
+
+//Function for drawing lines
+
+var line = function (x1, y1, x2, y2)
+{
+ctx.beginPath();
+ctx.moveTo(x1,y1);
+ctx.lineTo(x2,y2);
+ctx.stroke();
+
+
+}
+
+
+imageObj = new Image();
+var i=0;
+function draw(){
+	
+		{
+	//console.log(images[floor(i)]);
+	imageObj.src=images[Math.floor(i)];
+	
+	
+	
+	colorRect(0,0, canv.width, canv.height,'skyblue');
+	colorRect(treex,300, 50,250, 'saddlebrown');
+	colorCircle(treex+25, 250, 125, 'green');
+
+	colorRect(treex+300,300, 50,250, 'saddlebrown');
+	colorCircle(treex+325, 250, 125, 'green');
+	
+	colorRect(treex+600,300, 50,250, 'saddlebrown');
+	colorCircle(treex+625, 250, 125, 'green');
+
+	colorRect(treex+900,300, 50,250, 'saddlebrown');
+	colorCircle(treex+925, 250, 125, 'green');
+
+	colorRect(treex+1200,300, 50,250, 'saddlebrown');
+	colorCircle(treex+1225, 250, 125, 'green');
+	line(0, 550, 1800	, 550);
+
+
+	ctx.drawImage(imageObj,xpos,canv.height-300,300,300,);
+	
+
+	 }
+
+	i+=0.5;
+	//	xpos+=10;
+	if (i>4)
+	{
+	i=0;
+	}
+
+treex-=20;
+	if(treex<-1300)
+	{
+	console.log(canv.width);
+	treex=1000;
+	}
+	}
+
+
+
+
+
+
+function keyPush(evt) {
+
+
+
+
+}
+
+function colorRect(leftX, TopY, width, height, drawColor)
+{
+	
+	ctx.fillStyle= drawColor;
+	ctx.strokeRect(leftX, TopY, width, height);
+	ctx.fillRect(leftX, TopY, width, height);
+	
+}
+
+
+
+function colorCircle(centerX, centerY, radius, ballColor)
+{
+	ctx.fillStyle=ballColor;
+	ctx.beginPath();
+	ctx.arc(centerX, centerY, radius, 0, Math.PI*2, true);
+	ctx.fill();
+
+
+}
+
+
+
+
+
+
+
+
+</script>
