@@ -1,0 +1,211 @@
+<title> Sierpinski's Triangle </title>
+// Objective: Attempt to create Sierpinski's Triangle recursively <br>
+// Start Time: 1100			<br>
+// End Time: 1248			<hr>
+
+<canvas id="gc" width="400" height="400"></canvas>
+<script>
+window.onload=function() {
+
+
+	canv=document.getElementById("gc");
+	ctx=canv.getContext("2d");
+	//canv.addEventListener('mousemove', function(evt){ var mousePos= calculateMousePos(evt);
+							//paddle1Y= mousePos.y-PADDLE_HEIGHT/2;
+							//});
+
+	document.addEventListener("keydown", keyPush);
+
+
+	setInterval(function() {
+				
+				draw();
+				},
+				1000/1);
+	
+}
+
+
+
+
+
+var canv;
+var ctx;
+var numran1=0;
+var numran2=0;
+var numran3=0;
+
+
+
+
+
+
+
+
+
+var keyPush = function(evt){
+switch(evt.keyCode)
+	{
+}
+	
+};
+
+
+//Function for drawing lines
+
+var line = function (x1, y1, x2, y2)
+{
+ctx.beginPath();
+ctx.moveTo(x1,y1);
+ctx.lineTo(x2,y2);
+ctx.stroke();
+
+
+}
+
+
+
+
+function draw(){
+	
+	colorRect(0,0, canv.width, canv.height,'skyblue');
+	 
+	colorRect(0,0, 0,0, 'black');	// For some reason if I don't call this, the background overwrites the triangle.. weird right?
+	
+	var triangleht=400;
+	var trianglex=canv.width/2;
+	var triangley=5;
+
+
+	ctx.strokeStyle='black';
+	//ctx.stroke();
+	ctx.beginPath();
+    	ctx.moveTo(trianglex, triangley);
+   	ctx.lineTo(trianglex-(triangleht/2), triangley+triangleht);
+    	ctx.lineTo(trianglex+(triangleht/2), triangley+triangleht);
+    	ctx.fill();
+
+	
+	firstinverted (trianglex, triangley, triangleht);
+	//createnext(trianglex, triangley, triangleht);
+
+
+
+	numran1=numran2=numran3=0;
+	}
+
+var firstinverted = function (x, y, ht)
+{
+
+ctx.strokeStyle='white';
+	triangleht=ht/2;
+	trianglex=x;
+	triangley=y+ht;
+	colorRect(0,0, 0,0, 'white');
+	ctx.strokeStyle='white';	
+
+
+	ctx.beginPath();
+    	ctx.moveTo(trianglex, triangley);
+   	ctx.lineTo(trianglex-(triangleht/2), triangley-triangleht);
+    	ctx.lineTo(trianglex+(triangleht/2), triangley-triangleht);
+    	ctx.fill();
+
+createnext3(trianglex, triangley, triangleht);
+}
+
+var createnext3 =  function (x,y,ht)		// This function creates 3 inverted triangles 
+	{
+	triangleht=ht/2;
+	trianglex=x-triangleht;
+	triangley=y;
+	colorRect(0,0, 0,0, 'white');
+	ctx.strokeStyle='white';
+	ctx.stroke();
+
+	
+	
+	ctx.beginPath();
+    	ctx.moveTo(trianglex, triangley);
+   	ctx.lineTo(trianglex-(triangleht/2), triangley-triangleht);
+    	ctx.lineTo(trianglex+(triangleht/2), triangley-triangleht);
+    	ctx.fill();
+	numran1++;
+	numran2++;
+	numran3++;
+	
+	if (numran1<100)
+		{
+	//console.log ("Called1");
+	//createnext3(trianglex, triangley, triangleht);	
+		
+		}
+	trianglex=(trianglex+triangleht+triangleht);
+	ctx.beginPath();
+    	ctx.moveTo(trianglex, triangley);
+   	ctx.lineTo(trianglex-(triangleht/2), triangley-triangleht);
+    	ctx.lineTo(trianglex+(triangleht/2), triangley-triangleht);
+    	ctx.fill();
+	if (numran2<100)
+		{
+	//console.log("called");
+		//createnext3(trianglex, triangley, triangleht);
+		}
+	trianglex=trianglex-triangleht;
+	triangley=triangley-triangleht*2;
+	ctx.beginPath();
+    	ctx.moveTo(trianglex, triangley);
+   	ctx.lineTo(trianglex-(triangleht/2), triangley-triangleht);
+    	ctx.lineTo(trianglex+(triangleht/2), triangley-triangleht);
+    	ctx.fill();
+
+	if(numran3<100)
+		{
+	//console.log("called");
+	createnext3(trianglex, triangley, triangleht);
+		}
+	//createnext3(trianglex, triangley, triangleht);
+
+
+
+return;
+	}
+
+
+
+function keyPush(evt) {
+
+
+
+
+}
+
+function colorRect(leftX, TopY, width, height, drawColor)
+{
+	
+	ctx.fillStyle= drawColor;
+	ctx.strokeRect(leftX, TopY, width, height);
+	ctx.fillRect(leftX, TopY, width, height);
+	
+}
+
+
+
+function colorCircle(centerX, centerY, radius, ballColor)
+{
+	ctx.fillStyle=ballColor;
+	ctx.beginPath();
+	ctx.arc(centerX, centerY, radius, 0, Math.PI*2, true);
+	ctx.fill();
+
+
+}
+
+
+
+
+
+
+
+
+</script>
