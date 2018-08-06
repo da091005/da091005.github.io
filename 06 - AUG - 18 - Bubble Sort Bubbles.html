@@ -1,0 +1,216 @@
+Objective: Visualize a bubble sort using a "Bubble Class" <br>
+Start Time: 0315	<br>
+End Time:   0400	<hr>
+<title> Bubble Sort </title>
+<canvas id="gc" width="1200" height="600"></canvas>
+<script>
+window.onload=function() {
+
+
+	canv=document.getElementById("gc");
+	ctx=canv.getContext("2d");
+	//canv.addEventListener('mousemove', function(evt){ var mousePos= calculateMousePos(evt);
+							//paddle1Y= mousePos.y-PADDLE_HEIGHT/2;
+							//});
+
+	document.addEventListener("keydown", keyPush);
+
+
+	setInterval(function() {
+				
+				draw();
+				},
+				1000/12);
+	
+}
+
+
+
+
+
+var canv;
+var ctx;
+var bubblearr =[];		// An array of bubbles!! 
+var runonce=true;		// init flag
+var s=0;
+
+var t=1;
+
+
+
+
+
+var keyPush = function(evt){
+switch(evt.keyCode)
+	{
+}
+	
+};
+
+
+//Function for drawing lines
+
+var line = function (x1, y1, x2, y2)
+{
+ctx.beginPath();
+ctx.moveTo(x1,y1);
+ctx.lineTo(x2,y2);
+ctx.stroke();
+
+
+}
+
+function showBubble(bubble)
+	{
+	
+	this.bubble=bubble;
+
+	colorCircle(bubble.x, bubble.y, bubble.size, 'lightslategray');
+	colorCircle( ((bubble.size*0.6) * Math.cos((-45*Math.PI)/180)) + bubble.x, ((bubble.size*0.6) * Math.sin((-45*Math.PI)/180)) + bubble.y, bubble.size/4, 'darkgray');
+	ctx.strokeStyle='darkgray';
+	ctx.beginPath();
+	ctx.arc(bubble.x, bubble.y, bubble.size*0.8, (160*Math.PI)/180, (90*Math.PI)/180, true);
+	ctx.stroke();
+	};
+
+function initBubble()
+{
+var currentsize=5;	// start bubble size at 5 and increase by 3
+for(var i=0; i<23; i++)
+	{
+bubblearr[i]= new bubble(0+(i*currentsize), 600-(i*currentsize)/2, currentsize);
+	currentsize= currentsize +2;
+	}
+
+
+bubblearr= randomize(bubblearr)
+
+runonce=false;
+
+};
+
+function swap(pos1, pos2, bubblearr)
+	{
+	swappedarr=bubblearr;
+	var temp;
+	temp = swappedarr[pos1].size;
+	swappedarr[pos1].size= swappedarr[pos2].size;
+	swappedarr[pos2].size= temp;
+	return swappedarr;
+	};
+
+function randomize(bubblearr)
+	{
+	var rnd;	// random pos to swap to
+	len = bubblearr.length	// length of array
+	
+	for(var i=0; i<len; i++)
+		{
+		rnd=Math.floor(Math.random() * len);
+		bubblearr= swap(i, rnd, bubblearr)
+		}	
+
+	return bubblearr;
+	}
+
+
+
+function draw(){
+	if(runonce)
+	{
+	initBubble();
+	}
+	colorRect(0,0, canv.width, canv.height, 'black');
+	//var test= new bubble(200,150, 100);
+	for(var i=0; i<bubblearr.length; i++)
+	{
+	showBubble(bubblearr[i]);
+	}
+	
+// TIME TO BUBBLE SORT! 
+//for(var i=0; i<bubblearr.length; i++)
+
+if (s< bubblearr.length-t)
+	{
+	
+//	for(var j=0; j<i-1; j++)
+		{
+		if(bubblearr[s+1].size <  bubblearr[s].size)
+			{
+			bubblearr=swap(s, s+1, bubblearr);
+			}
+		}
+
+
+	}	
+
+s++;	
+if (s===bubblearr.length-t)
+{
+t++;
+s=0;
+}
+
+
+//x3 = (bmht * Math.cos(angle+offset)) + x2;
+//y3 = (bmht * Math.sin(angle+offset)) + y2;
+
+	
+
+
+
+	
+	}
+
+
+
+
+
+
+function keyPush(evt) {
+
+
+
+
+}
+
+function colorRect(leftX, TopY, width, height, drawColor)
+{
+	
+	ctx.fillStyle= drawColor;
+	ctx.strokeRect(leftX, TopY, width, height);
+	ctx.fillRect(leftX, TopY, width, height);
+	
+}
+
+
+
+function colorCircle(centerX, centerY, radius, ballColor)
+{
+	ctx.fillStyle=ballColor;
+	ctx.beginPath();
+	ctx.arc(centerX, centerY, radius, 0, Math.PI*2, true);
+	ctx.fill();
+
+
+}
+
+
+
+class bubble {
+	constructor(x,y, size){
+	this.x = x;
+	this.y = y;
+	this.size = size;
+		}
+
+	}
+
+
+
+
+
+
+
+
+</script>
