@@ -1,0 +1,333 @@
+Objective: Create a game where bubble fall and you have to catch them in a "bucket" <br>
+Start Time: 0200	<br>
+End Time:   0600	<hr>
+<title> Falling Bubbles </title>
+<canvas id="gc" width="1200" height="600"></canvas>
+
+
+
+
+<script>
+
+
+
+window.onload=function() {
+
+	canv=document.getElementById("gc");
+	ctx=canv.getContext("2d");
+	canv.addEventListener('mousemove', function(evt){ var mousePos= calculateMousePos(evt);
+							mouseY= mousePos.y;
+							mouseX= mousePos.x;		
+							});
+
+	//document.addEventListener("keydown", keyPush);
+	
+	
+
+	setInterval(function() {
+				
+				draw();
+				},
+				1000/1000);
+	
+}
+
+
+
+
+
+var canv;
+var ctx;
+var bubblearr =[];		// An array of bubbles!! 
+var runonce=true;		// init flag
+var currenthighest=0;		// Position of the biggest value
+var count=0;
+mouseX=0;
+mouseY=0;
+var ballvel=1;
+var playerscore=0;
+
+
+
+
+//var mySound= new sound('Windows Proximity Notification.wav');
+
+var keyPush = function(evt){
+switch(evt.keyCode)
+	{
+}
+	
+};
+
+
+
+function calculateMousePos(evt){
+	var rect= canv.getBoundingClientRect();
+	var root= document.documentElement;
+	var mouseX = evt.clientX - rect.left - root.scrollLeft;
+	var mouseY = evt.clientY - rect.top - root.scrollTop;	
+	return{
+	x: mouseX, 
+	y: mouseY
+	}
+	};
+
+
+
+//Function for drawing lines
+
+var line = function (x1, y1, x2, y2)
+{
+ctx.beginPath();
+ctx.moveTo(x1,y1);
+ctx.lineTo(x2,y2);
+ctx.stroke();
+
+
+}
+
+function showBubble(bubble)
+	{
+	
+	this.bubble=bubble;
+	
+	colorCircle(bubble.x, bubble.y, bubble.size, bubble.color);
+	colorCircle( ((bubble.size*0.6) * Math.cos((-45*Math.PI)/180)) + bubble.x, ((bubble.size*0.6) * Math.sin((-45*Math.PI)/180)) + bubble.y, bubble.size/4, 'darkgray');
+	ctx.strokeStyle='darkgray';
+	ctx.beginPath();
+	ctx.arc(bubble.x, bubble.y, bubble.size*0.8, (160*Math.PI)/180, (90*Math.PI)/180, true);
+	ctx.stroke();
+	};
+
+function initBubble()
+{
+var color='red'
+var currentsize=5;	// start bubble size at 5 and increase by 3
+for (var j=0; j<Math.floor((canv.height-(canv.height/(currentsize*2)))/(currentsize*2)); j++)
+	{
+for(var i=0; i<Math.floor((canv.width-(canv.width/(currentsize*2)))/(currentsize*2)); i++)
+	{
+	index=(j * (Math.floor((canv.width-(canv.width/(currentsize*2)))/(currentsize*2))) +i);
+	bubblearr[index]=new bubble(i+(i*(currentsize*2))+currentsize, j+(j*(currentsize*2))+currentsize, currentsize, color);
+	//console.log(index)
+	}
+	color=randomcolor();
+	//currentsize= currentsize +2;
+	}
+
+
+bubblearr= randomize(bubblearr)
+//console.log(bubblearr.length);
+runonce=false;
+
+};
+
+function randomcolor(){
+var color; 
+var colornum= Math.floor(Math.random() * 6);
+switch (colornum)
+	{
+
+case 0: color = 'red';
+break;
+case 1: color = 'orange';
+break;
+case 2: color = 'yellow';
+break;
+case 3: color = 'green';
+break;
+case 4: color = 'blue';
+break;
+case 5: color = 'purple';
+break;
+	}
+return color;
+
+}
+
+
+
+function swap(pos1, pos2, bubblearr)
+	{
+	swappedarr=bubblearr;
+	var temp;
+	temp = swappedarr[pos1].color;
+	swappedarr[pos1].color= swappedarr[pos2].color;
+	swappedarr[pos2].color= temp;
+	swapcount++;
+	return swappedarr;
+	
+	};
+
+function randomize(bubblearr)
+	{
+	var rnd;	// random pos to swap to
+	len = bubblearr.length	// length of array
+	
+	for(var i=0; i<len; i++)
+		{
+		rnd=Math.floor(Math.random() * len);
+		bubblearr= swap(i, rnd, bubblearr)
+		}	
+
+	return bubblearr;
+	}
+
+
+
+var y=0;
+var bubblearr = [];
+//bubblearr.push(new bubble(300, y, 20, 'green'));
+
+function draw(){
+	colorRect(0,0, canv.width, canv.height, 'skyblue');
+	if(runonce)
+		{
+		for(var i=0; i<10; i++)
+			{
+		rnd=Math.floor((Math.random()*canv.width-1))+1;
+		//rnd=canv.width/2;
+		bubblearr.push(new bubble(rnd, y-(i*200), 20, randomcolor()));
+			}
+		runonce=false;
+		}
+	//mouseX=bubblearr[0].x-37;
+
+// Uncomment this if you want a crappy "AI" to play the game
+if(mouseX<bubblearr[0].x)
+	{
+mouseX+=15;
+	}
+else if(mouseX > bubblearr[0].x)
+	{
+
+mouseX-=15;
+	}
+
+
+
+
+// If ball falls in bucket
+	for(var i=0; i<bubblearr.length; i++)
+		{
+		if((bubblearr[i].y>canv.height-200) && (bubblearr[i].y < canv.height-180)  && (bubblearr[i].x > mouseX-37) && (bubblearr[i].x < mouseX+37))
+			{
+		bubblearr.splice(i,1);
+		playerscore++;
+		count++;
+		}
+
+		}
+
+	for(var i=0; i<bubblearr.length; i++)
+		{
+		bubblearr[i].y+=ballvel;
+		if(bubblearr[i].y>canv.height)
+			{
+		bubblearr.splice(i,1);
+			}
+		
+		}
+	
+	for(var i=0; i<bubblearr.length; i++)
+		{
+		showBubble(bubblearr[i]);
+		
+		}
+
+
+	{
+colorRect(mouseX-37, canv.height-200, 75,75, 'grey');
+	}
+
+	
+
+	ctx.fillStyle='black';
+	ctx.font = "10px Arial"
+	ctx.fillText("Score: " + playerscore, canv.width-100,30);
+
+
+if ((count===10) && (playerscore<750))
+	{
+	count=0;
+	ballvel+=0.25;
+
+
+	}
+
+
+if(bubblearr.length==0)
+{
+
+runonce=true;
+
+}
+
+};
+
+
+
+
+
+
+function keyPush(evt) {
+
+
+
+
+}
+
+function colorRect(leftX, TopY, width, height, drawColor)
+{
+	
+	ctx.fillStyle= drawColor;
+	ctx.strokeRect(leftX, TopY, width, height);
+	ctx.fillRect(leftX, TopY, width, height);
+	
+}
+
+
+
+function colorCircle(centerX, centerY, radius, ballColor)
+{
+	ctx.fillStyle=ballColor;
+	ctx.beginPath();
+	ctx.arc(centerX, centerY, radius, 0, Math.PI*2, true);
+	ctx.fill();
+
+
+}
+
+
+
+class bubble {
+	constructor(x,y, size, color){
+	this.x = x;
+	this.y = y;
+	this.size = size;
+	this.color = color;
+		}
+
+	}
+
+
+
+function sound(src) {
+    this.sound = document.createElement("audio");
+    this.sound.src = src;
+    this.sound.setAttribute("preload", "auto");
+    this.sound.setAttribute("controls", "none");
+    this.sound.style.display = "none";
+    document.body.appendChild(this.sound);
+    this.play = function(){
+        this.sound.play();
+    }
+    this.stop = function(){
+        this.sound.pause();
+    }
+
+}
+
+
+
+</script>
