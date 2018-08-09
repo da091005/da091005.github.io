@@ -1,0 +1,272 @@
+Objective: Visualize a Selection Sort using previously made "Bubble Class" <br>
+Start Time: 1800	<br>
+End Time:   1900	<hr>
+<title> Selection Sort </title>
+<canvas id="gc" width="1200" height="600"></canvas>
+<script>
+window.onload=function() {
+
+
+	canv=document.getElementById("gc");
+	ctx=canv.getContext("2d");
+	//canv.addEventListener('mousemove', function(evt){ var mousePos= calculateMousePos(evt);
+							//paddle1Y= mousePos.y-PADDLE_HEIGHT/2;
+							//});
+
+	document.addEventListener("keydown", keyPush);
+
+
+	setInterval(function() {
+				
+				draw();
+				},
+				1000/100000);
+	
+}
+
+
+
+
+
+var canv;
+var ctx;
+var bubblearr =[];		// An array of bubbles!! 
+var runonce=true;		// init flag
+var s=0;
+var currenthighest=0;		// Position of the biggest value
+var t=0;
+var count=0;
+var sortonce=true;		// flag to only sort the array once
+var swapcount=0;
+var higher=0;
+
+
+var keyPush = function(evt){
+switch(evt.keyCode)
+	{
+}
+	
+};
+
+
+//Function for drawing lines
+
+var line = function (x1, y1, x2, y2)
+{
+ctx.beginPath();
+ctx.moveTo(x1,y1);
+ctx.lineTo(x2,y2);
+ctx.stroke();
+
+
+}
+
+function showBubble(bubble)
+	{
+	
+	this.bubble=bubble;
+	
+	colorCircle(bubble.x, bubble.y, bubble.size, bubble.color);
+	colorCircle( ((bubble.size*0.6) * Math.cos((-45*Math.PI)/180)) + bubble.x, ((bubble.size*0.6) * Math.sin((-45*Math.PI)/180)) + bubble.y, bubble.size/4, 'darkgray');
+	ctx.strokeStyle='darkgray';
+	ctx.beginPath();
+	ctx.arc(bubble.x, bubble.y, bubble.size*0.8, (160*Math.PI)/180, (90*Math.PI)/180, true);
+	ctx.stroke();
+	};
+
+function initBubble()
+{
+var color='red'
+var currentsize=1;	// start bubble size at 5 and increase by 3
+for (var j=0; j<Math.floor((canv.height-(canv.height/(currentsize*2)))/(currentsize*2)); j++)
+	{
+for(var i=0; i<Math.floor((canv.width-(canv.width/(currentsize*2)))/(currentsize*2)); i++)
+	{
+	index=(j * (Math.floor((canv.width-(canv.width/(currentsize*2)))/(currentsize*2))) +i);
+	bubblearr[index]=new bubble(i+(i*(currentsize*2))+currentsize, j+(j*(currentsize*2))+currentsize, currentsize, color);
+	//console.log(index)
+	}
+	color=randomcolor();
+	//currentsize= currentsize +2;
+	}
+
+
+bubblearr= randomize(bubblearr)
+//console.log(bubblearr.length);
+runonce=false;
+
+};
+
+function randomcolor(){
+var color; 
+var colornum= Math.floor(Math.random() * 6);
+switch (colornum)
+	{
+
+case 0: color = 'red';
+break;
+case 1: color = 'orange';
+break;
+case 2: color = 'yellow';
+break;
+case 3: color = 'green';
+break;
+case 4: color = 'blue';
+break;
+case 5: color = 'purple';
+break;
+	}
+return color;
+
+}
+
+
+
+function swap(pos1, pos2, bubblearr)
+	{
+	swappedarr=bubblearr;
+	var temp;
+	temp = swappedarr[pos1].color;
+	swappedarr[pos1].color= swappedarr[pos2].color;
+	swappedarr[pos2].color= temp;
+	swapcount++;
+	return swappedarr;
+	
+	};
+
+function randomize(bubblearr)
+	{
+	var rnd;	// random pos to swap to
+	len = bubblearr.length	// length of array
+	
+	for(var i=0; i<len; i++)
+		{
+		rnd=Math.floor(Math.random() * len);
+		bubblearr= swap(i, rnd, bubblearr)
+		}	
+
+	return bubblearr;
+	}
+
+
+
+function draw(){
+	if(runonce)
+	{
+	initBubble();
+	swapcount=0;
+	}
+	colorRect(0,0, canv.width, canv.height, 'black');
+	//var test= new bubble(200,150, 100);
+	for(var i=0; i<bubblearr.length; i++)
+	{
+	showBubble(bubblearr[i]);
+	}
+	
+// TIME TO Selection Sort
+if (sortonce)
+{
+//for(var i=0; i<bubblearr.length-1; i++)
+	{
+currenthighest=t;
+	for(var j=t+1; j<bubblearr.length; j++)
+		{
+		if(bubblearr[j].color > bubblearr[currenthighest].color)
+			{
+			currenthighest=j;
+			}
+
+		}
+
+	if(currenthighest!=t)
+		{
+		bubblearr= swap(currenthighest, t, bubblearr);
+		}
+
+
+	}
+
+
+
+
+
+}
+if(t<bubblearr.length-1)
+	{
+t++;
+	}
+if((t>=bubblearr.length-1) && (sortonce))
+	{
+
+console.log ("COMPLETE");
+console.log("SWAPS: " + swapcount);
+sortonce=false;
+console.log("SIZE:" + bubblearr.length);
+	}
+
+
+
+
+
+
+
+	
+
+
+
+	
+	}
+
+
+
+
+
+
+function keyPush(evt) {
+
+
+
+
+}
+
+function colorRect(leftX, TopY, width, height, drawColor)
+{
+	
+	ctx.fillStyle= drawColor;
+	ctx.strokeRect(leftX, TopY, width, height);
+	ctx.fillRect(leftX, TopY, width, height);
+	
+}
+
+
+
+function colorCircle(centerX, centerY, radius, ballColor)
+{
+	ctx.fillStyle=ballColor;
+	ctx.beginPath();
+	ctx.arc(centerX, centerY, radius, 0, Math.PI*2, true);
+	ctx.fill();
+
+
+}
+
+
+
+class bubble {
+	constructor(x,y, size, color){
+	this.x = x;
+	this.y = y;
+	this.size = size;
+	this.color = color;
+		}
+
+	}
+
+
+
+
+
+
+
+
+</script>
