@@ -1,0 +1,511 @@
+Objective: Use the falling bubble game to create a Mavis Beacon Style game <br>
+Start Time: 0300	<br>
+End Time:  0600  	<hr>
+<title> Mavis Beacon </title>
+<canvas id="gc" width="1200" height="600"></canvas>
+
+
+
+
+<script>
+
+
+
+window.onload=function() {
+
+	canv=document.getElementById("gc");
+	ctx=canv.getContext("2d");
+	canv.addEventListener('mousemove', function(evt){ var mousePos= calculateMousePos(evt);
+							mouseY= mousePos.y;
+							mouseX= mousePos.x;		
+							});
+
+	document.addEventListener("keydown", keyPush);
+	
+	
+
+	setInterval(function() {
+				
+				draw();
+				},
+				1000/1000);
+	
+}
+
+
+
+
+
+var canv;
+var ctx;
+var bubblearr =[];		// An array of bubbles!! 
+var runonce=true;		// init flag
+var currenthighest=0;		// Position of the biggest value
+var count=0;
+mouseX=0;
+mouseY=0;
+var ballvel=1;
+var playerscore=0;
+var y=0;
+var miss= new sound("WHOOSH.WAV");
+var wrong= new sound("CAN.WAV");
+var pop= new sound("CLICK.WAV");
+var newlife = new sound ("CASHREG.WAV");
+var lives=[];
+var setlives=true;		// flag to initiate lives 
+var gameover=gameover;		// flag for gameover
+var soundon=true;
+var cheatcode=[];
+var comparecode=[38, 38, 40, 40, 37, 39, 37, 39, 66, 65];
+var same=false;
+var popped=[];
+var xvel=0.5;
+
+//var mySound= new sound('Windows Proximity Notification.wav');
+
+var keyPush = function(evt){
+if(gameover)
+{
+cheatcode[cheatcode.length]=evt.keyCode;
+if(cheatcode[0] != comparecode[0])
+	{
+	cheatcode.length=0;
+	}
+// UP UP DOWN DOWN LEFT RIGHT LEFT RIGHT B A
+if(cheatcode.length===comparecode.length)
+	{
+	same=true;
+	for(var i=0; ((i<cheatcode.length) && (same)); i++)
+	{
+	same=(cheatcode[i]===comparecode[i])
+	if(!same)
+		{
+		cheatcode.length=0;
+		}
+	}
+
+	
+
+
+var livesy=30;
+var livesx=0;
+if((same) && (playerscore===42))
+	{
+	bubblearr.length=0;
+	runonce=true;
+	count=0;
+	ballvel=1;
+	for(var i=0; i<40; i++)
+		{
+	if(i==20)
+	{
+	livesy=70;
+	livesx=0;
+	}
+	lives[i]=  new bubble(100+(livesx*40), livesy,20,  'red')
+	livesx++;
+	lives[i].code = i+1
+
+		}	
+
+	
+	cheatcode.length=0;
+	gameover=false;
+
+	}
+
+
+	}
+
+
+}
+if((!gameover) && (bubblearr[0]))
+{
+if(evt.keyCode===bubblearr[0].code) 
+{
+
+popped[popped.length]=bubblearr[0];
+bubblearr.splice(0,1);
+playerscore++;
+count++;
+if(soundon)
+{
+pop.play();
+}
+if((count===10) && (lives.length<20))
+	{
+	if(soundon)
+	{
+	newlife.play();
+	}
+	lives.push(new bubble(100 + ((lives.length)*40), 30, 20, 'red'));
+	lives[lives.length-1].code= lives.length;
+	}
+
+}	
+else
+{
+if(soundon)
+{
+wrong.play();
+}
+lives.pop();
+count=0;
+
+}
+
+}
+
+
+	
+};
+
+
+
+function calculateMousePos(evt){
+	var rect= canv.getBoundingClientRect();
+	var root= document.documentElement;
+	var mouseX = evt.clientX - rect.left - root.scrollLeft;
+	var mouseY = evt.clientY - rect.top - root.scrollTop;	
+	return{
+	x: mouseX, 
+	y: mouseY
+	}
+	};
+
+
+
+
+//Function for drawing lines
+
+var line = function (x1, y1, x2, y2)
+{
+ctx.beginPath();
+ctx.moveTo(x1,y1);
+ctx.lineTo(x2,y2);
+ctx.stroke();
+
+
+}
+
+function showBubble(bubble)
+	{
+	
+	this.bubble=bubble;
+	
+	colorCircle(bubble.x, bubble.y, bubble.size, bubble.color);
+	colorCircle( ((bubble.size*0.6) * Math.cos((-45*Math.PI)/180)) + bubble.x, ((bubble.size*0.6) * Math.sin((-45*Math.PI)/180)) + bubble.y, bubble.size/4, 'darkgray');
+	ctx.strokeStyle='darkgray';
+	ctx.beginPath();
+	ctx.arc(bubble.x, bubble.y, bubble.size*0.8, (160*Math.PI)/180, (90*Math.PI)/180, true);
+	ctx.stroke();
+	ctx.fillStyle='black';
+	ctx.font = "bold " + bubble.size + "px Arial"
+	if(bubble.code >=65)
+		{
+	var ch= String.fromCharCode(bubble.code);
+		}
+	else
+	{
+	ch=bubble.code;
+	}
+	ctx.fillText( ch, bubble.x-10, bubble.y+(bubble.size/2));
+
+	};
+
+	
+
+
+
+
+
+
+function randomcolor(){
+var color; 
+var colornum= Math.floor(Math.random() * 6);
+switch (colornum)
+	{
+
+case 0: color = 'red';
+break;
+case 1: color = 'orange';
+break;
+case 2: color = 'yellow';
+break;
+case 3: color = 'lime';
+break;
+case 4: color = 'aqua';
+break;
+case 5: color = 'white';
+break;
+	}
+return color;
+
+}
+
+
+
+
+
+
+var bubblearr = [];
+
+
+function draw(){
+if(!gameover)
+	{
+	colorRect(0,0, canv.width, canv.height, 'skyblue');
+		
+	if(setlives)
+		{
+		for(var i=0; i<10; i++)
+			{
+		lives[i]=  new bubble(100+(i*40), 30,20,  'red')
+		lives[i].code = i+1
+			}
+		setlives=false;
+		};
+	for(var i=0; i<lives.length; i++)
+		{
+	showBubble(lives[i]);
+		}
+
+	
+	if(runonce)
+		{
+		for(var i=0; i<10; i++)
+			{
+		rnd=Math.floor(Math.random()*((canv.width-50)-50))+50 ;
+		//rnd=Math.floor((Math.random()*(canv.width/2))-(canv.width/2-300))+canv.width/2-300;
+		//rnd=canv.width/2;
+		//rnd=mouseX;
+		bubblearr.push(new bubble(rnd, y-(i*300), 20, randomcolor()));
+			}
+		runonce=false;
+		}
+
+
+
+	for(var i=0; i<bubblearr.length; i++)
+		{
+		bubblearr[i].y+=ballvel;
+		if(bubblearr[i].y>canv.height)
+			{
+		bubblearr.splice(i,1);
+		if(soundon)
+		{
+		miss.play();
+		}
+		lives.pop();
+		count=0;
+			}
+		}
+
+
+	for(var i=0; i<bubblearr.length; i++)
+		{
+		showBubble(bubblearr[i]);
+		
+		}
+
+
+	for(var i=0; i<popped.length; i++)
+	{
+	//console.log(popped.length);
+	popped[i].size*=0.995 ;
+	popped[i].x+=xvel;
+	showBubble(popped[i]);
+	if(popped[i].size<1)
+		{
+		popped.splice(0,1);
+	
+		}
+	}
+
+	
+
+	ctx.fillStyle='black';
+	ctx.font = "bold 10px Arial"
+	ctx.fillText("Score: " + playerscore, canv.width-100,30);
+	ctx.font = "bold 25px Arial"
+	ctx.fillText( "Lives:", 5, 40);
+
+if (count===10)
+	{
+	count=0;
+	if (playerscore<=60)
+	{
+	ballvel+=0.15;
+	}
+
+	if(lives.length===20)
+	{
+	ballvel+=0.15;
+	
+	}
+
+	if(lives.length>20)
+	{
+	if(ballvel<1.83)
+	{
+	ballvel+=0.10
+		}
+
+	}
+
+
+
+	}
+
+
+if(bubblearr.length==0)
+{
+
+runonce=true;
+
+}
+
+if(lives.length===0)
+{
+gameover=true;
+
+
+}
+
+
+// handle soundon/ off
+ctx.fillStyle='black';
+ctx.font = "bold 11px Arial"
+ctx.fillText("Click anywhere to toggle sound", 50,canv.height-10);
+soundsOn();
+
+
+canv.onclick = function (){soundon=!soundon;};
+
+}
+
+
+else
+{
+//console.log("GAMEOVER");
+colorRect(0,0, canv.width, canv.height, 'skyblue');
+	ctx.fillStyle='black';
+	ctx.font = "bold 30px Arial"
+	ctx.fillText("GAME OVER!!", canv.width/2-100,canv.height/2-100);
+	ctx.font = "bold 25px Arial"
+	ctx.fillText( "Score:" + playerscore, canv.width/2-100, canv.height/2 + 30-100);
+	ctx.fillText( "Click to Restart" , canv.width/2-100, canv.height/2 + 60-100);
+	if(cheatcode.length===0)
+	{
+	ctx.font = "8px Arial"
+	ctx.fillStyle='white';
+	ctx.fillText( "Hint: If your score equals the meaning of life, Konami!" , canv.width/2-100, canv.height -1);
+	}
+	canv.onclick = function (){
+	bubblearr.length=0;
+	setlives=true;
+	runonce=true;
+	count=0;
+	ballvel=1;
+	playerscore=0;
+	cheatcode.length=0;
+	gameover=false;
+	}
+
+
+	
+
+
+}
+
+};
+
+
+
+
+
+
+function keyPush(evt) {
+
+
+
+
+}
+
+function colorRect(leftX, TopY, width, height, drawColor)
+{
+	
+	ctx.fillStyle= drawColor;
+	ctx.strokeRect(leftX, TopY, width, height);
+	ctx.fillRect(leftX, TopY, width, height);
+	
+}
+
+
+
+function colorCircle(centerX, centerY, radius, ballColor)
+{
+	ctx.fillStyle=ballColor;
+	ctx.beginPath();
+	ctx.arc(centerX, centerY, radius, 0, Math.PI*2, true);
+	ctx.fill();
+
+
+}
+
+
+
+function soundsOn()
+{
+	
+	ctx.fillStyle='black';
+	ctx.strokeStyle='black';	
+	ctx.beginPath();
+	ctx.arc(20, canv.height-20, 20, 0, Math.PI*2, true);
+	ctx.stroke();
+	ctx.fillText( "SOUND" , 0, canv.height-20);
+	if(soundon)
+	{
+	ctx.fillText( "ON" , 10, canv.height-10);
+	}
+	else
+	{
+	ctx.fillText( "OFF" , 10, canv.height-10);
+	}
+	
+}
+
+
+
+class bubble {
+	constructor(x,y, size, color){
+	this.x = x;
+	this.y = y;
+	this.size = size;
+	this.color = color;
+	this.code= Math.floor(Math.random() * (91-65)) +65;
+		}
+
+	}
+
+
+
+function sound(src) {
+    this.sound = document.createElement("audio");
+    this.sound.src = src;
+    this.sound.setAttribute("preload", "auto");
+    this.sound.setAttribute("controls", "none");
+    this.sound.style.display = "none";
+    document.body.appendChild(this.sound);
+    this.play = function(){
+        this.sound.play();
+    }
+    this.stop = function(){
+        this.sound.pause();
+    }
+
+}
+
+
+
+</script>
