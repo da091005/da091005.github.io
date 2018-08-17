@@ -1,0 +1,578 @@
+<canvas id="gc" width="1000" height="600"></canvas>
+<script>
+window.onload=function() {
+
+
+
+	canv=document.getElementById("gc");
+	ctx=canv.getContext("2d");
+	//canv.addEventListener('mousemove', function(evt){ var mousePos= calculateMousePos(evt);
+							//paddle1Y= mousePos.y-PADDLE_HEIGHT/2;
+							//});
+
+	document.addEventListener("keydown", keyPush);
+
+	
+
+
+	setInterval(function() {
+				
+				draw();
+				},
+				1000/60);
+	
+}
+
+
+
+
+
+var canv;
+var ctx;
+var x=0; 	// xpos of crane
+var y;		// ypos of crane
+var x2;		// PivotX of boom
+var y2;		// PivotY of boom
+var x3;		// Point on boom to start rope
+var y3;		// Point on Boom to start rope
+var angle=-45; 	// angle of boom arm
+var xvel=0;	// velocity of crane X-axis
+var bmvel=0;	// velocity of bm moving
+var bmht=400;	// height of top of boom
+var bmhtvel=0;	// speed of boom extend retract
+var winchln;	// length of rope
+var ropexX;	// Xvalue of end of rope
+var ropeY;	// YPos of end of rope
+var ropelen=700;	// Length of rope
+var ropevel=0;	// Velocity of rope going up and down
+var hook=false;	// hooked flag 
+var gravity = 0.25;	// velocity of objects falling to earth
+var offset;		// calculating the offset of the top of the string. 
+var ground = 600 - 100; // Height of ground
+var runonce= true;
+var numwts=5;		// number of weights to show
+var weights=[];		// Array of weights to display;
+var z=0;
+const CRANE_WIDTH=200;
+const CRANE_HEIGHT=70;
+scalegoal=0;
+scaleweight=0;		// weight of the weights currently on scale
+
+
+
+
+
+
+
+
+
+var keyPush = function(evt){
+switch(evt.keyCode)
+	{
+	case 37:
+		xvel--;
+	break;
+	case 38:
+		bmvel-=0.25;
+	break;
+	case 39:
+		xvel++;
+	break;
+	case 40:
+		bmvel+=0.25;
+	break;
+	case 65:
+		if(ropevel >0)
+		{
+		ropevel=0;
+		}	
+		else
+		{
+		ropevel=-2;
+		}
+	break;
+	case 68:
+		if(ropevel <0)
+		{
+		ropevel=0;
+		}	
+		else
+		{
+		ropevel=2;
+		}
+	break;
+
+	case 87:
+		if(bmhtvel<0){
+			bmhtvel=0;
+		}
+		else
+		{
+		bmhtvel=0.75;
+		}
+	
+	break;
+	case 83:
+		if(bmhtvel>0){
+			bmhtvel=0;
+		}
+		else
+		{
+		bmhtvel=-0.75
+		}
+	
+	break;
+
+
+	case 32:
+	hook=!hook;
+	for(var i=0; i<weights.length; i++)
+		{
+		if(weights[i].y<ground-150)
+			{
+			weights[i].breakable=true;
+			}
+		weights[i].hooked=false;
+		}
+	if(hook)
+	{
+	checkhook();
+
+	}
+
+
+	break;
+
+
+
+	}
+
+};
+
+
+//Function for drawing lines
+
+var line = function (x1, y1, x2, y2)
+{
+ctx.beginPath();
+ctx.moveTo(x1,y1);
+ctx.lineTo(x2,y2);
+ctx.stroke();
+
+
+}
+
+
+var drawCrane = function (craneX, craneY){
+ctx.lineWidth=4;
+
+x2=craneX+(CRANE_WIDTH/2);
+y2=craneY+30;
+
+ctx.translate(x2,y2);
+ctx.rotate(angle);
+ctx.lineWidth=3;
+colorRect(0,10, bmht, CRANE_WIDTH/12, 'gold');	// extending boom of crane
+
+
+colorRect(0,0, 250, CRANE_WIDTH/6, 'gold');	// bottom boom of crane
+
+ctx.rotate(-angle);
+ctx.translate(-x2,-y2);
+
+ctx.lineWidth=8;
+colorRect(craneX+10, craneY-110, 110, 110, 'gold');		// yellow cab
+colorRect(craneX+20, craneY-100, 90, 90, 'skyblue');		// window
+
+ctx.lineWidth=5;
+colorRect(craneX, craneY, CRANE_WIDTH, CRANE_HEIGHT, 'gold');	// base of crane
+
+ctx.lineWidth=2;
+ctx.strokeStyle='snow';				// LINES OF THE WINDOW
+line(craneX+30, craneY-60, craneX+55, craneY-85);	// LINES OF THE WINDOW
+line(craneX+25, craneY-35, craneX+80, craneY-85);	// LINES OF THE WINDOW
+line(craneX+40, craneY-25, craneX+75, craneY-55);	// LINES OF THE WINDOW
+ctx.strokeStyle='black';
+line(craneX+95, craneY-10, craneX+95, craneY-40);	// Line of the control knob
+colorCircle(craneX+95, craneY-40, 5, 'black');		// Controll Knob
+colorCircle(craneX+20, craneY +70, 20, 'black');	// wheel
+colorCircle(craneX+20, craneY +70, 15, 'gray');		// wheel
+colorCircle(craneX+160, craneY +70, 20, 'black');	// wheel
+colorCircle(craneX+160, craneY +70, 15, 'gray');	// wheel
+
+
+	// Calculating Rope stuff
+offset=Math.sqrt( (bmht*bmht) + (CRANE_WIDTH/6*(CRANE_WIDTH/6)) );
+offset=Math.atan(offset);
+offset= (offset/180) * Math.PI;
+
+x3 = (bmht * Math.cos(angle+offset)) + x2;
+y3 = (bmht * Math.sin(angle+offset)) + y2;
+
+
+		// Print the rope (and circle to cover top of rope
+z=90/180*Math.PI;
+ropeX = ((ropelen-bmht)/2.0) * (Math.cos(z)) +x3;
+ropeY = ((ropelen-bmht)/2.0) * (Math.sin(z)) +y3;
+line(x3, y3, ropeX, ropeY);
+ctx.strokeWeight=4;
+
+
+ctx.stroke();
+colorCircle(x3,y3, 6, 'black');
+colorCircle(x3, y3, 5, 'gold');
+	
+	
+	
+
+		// print the Hook!
+if (hook)
+{	
+	
+ctx.beginPath();
+	ctx.arc(ropeX, ropeY+10, 10,  0, 2*Math.PI, true);
+	//ctx.fill();	
+
+
+}
+else if(!hook)
+{
+
+	ctx.beginPath();
+	ctx.arc(ropeX, ropeY+10, 10,  0, 1*Math.PI, true);
+	//ctx.fill();
+
+
+
+}
+
+
+ctx.stroke();
+
+
+};
+
+
+var calculateMovement = function(){
+
+
+for(var i=0; i<weights.length; i++)
+	{
+	if((weights[i].y<ground-((i+1)*5)) && (!weights[i].hooked))
+		{
+		weights[i].speed+=gravity;
+		weights[i].y+=weights[i].speed;
+
+		
+
+		}
+	else
+	{
+	if(weights[i].hooked)
+		{
+		weights[i].x=ropeX-weights[i].weight;
+		weights[i].y=ropeY+20;
+
+		}
+	}
+
+	if((weights[i].y>=ground-((i+1)*5)) && (weights[i].breakable))
+	{
+	weights[i].y+=weights[i].weight*2;
+	weights[i].weight=weights[i].weight/2;
+	weights[i].breakable=false;	
+
+
+	
+	}
+
+
+
+
+
+	}
+
+x=x+xvel;		// "Drive the Crane"
+
+
+if(angle>-45.5 && angle<-44.3)			// Moving the boom up and down
+	{
+	angle= angle+(bmvel*Math.PI)/180;
+	}
+else if((angle <= -45.5) && (bmvel>0) || (angle >=-44.3 && bmvel<0))
+	{
+	angle = angle + (bmvel*Math.PI/180);
+	}
+else {
+bmvel=0;
+}
+
+
+
+if(bmht <500 && bmht>275) 	// UPPER/ LOWER limits of boom extend
+{
+bmht = bmht + bmhtvel;
+}
+else if ((bmht >= 500 && bmhtvel<0) || (bmht<=275 && bmhtvel>0))
+{
+bmht += bmhtvel;
+}
+else
+{
+bmhtvel=0;
+}
+
+
+
+if (ropelen > 550 && ropelen <1500)		// Moving String up and down;
+	{
+	ropelen= ropelen + ropevel;
+	}
+	else if ((ropelen >=500 && ropevel <0) || (ropelen <=1500 && ropevel >0))
+	{
+	ropelen = ropelen + ropevel;
+	}
+	else
+	{
+	ropevel=0;
+	}
+
+
+
+// Check for weights on scale and change their flags accordingly
+for(var i=0; i<weights.length; i++)
+	{
+	if((weights[i].x>canv.width-200) && (weights[i].x<(canv.width-200)+(100-(weights[i].weight))) && (weights[i].y>=ground-(i+2)*5) && (!weights[i].hooked) && (weights[i].y<ground+50))
+		{
+	weights[i].onscale=true;
+	
+		}
+	else
+	{
+	weights[i].onscale=false;
+	}
+
+	}
+
+
+
+
+
+if(runonce)
+{
+for(var i=0; i<numwts; i++)
+	{
+weights[i]=new weight(canv.width/4+((i+2)*(i+2)*5), (ground-((i+1)*5)), (i+2)*5);
+	}
+
+
+runonce=false;	
+}
+
+
+
+
+}
+
+
+
+
+
+
+function draw(){
+	calculateMovement();
+	colorRect(0,0, canv.width, canv.height,'skyblue');
+	colorRect(0, canv.height-100, canv.width, 100, 'green'); 
+	
+	showScale();
+	for(var i=0; i<weights.length; i++)
+	{
+	if(!weights[i].hooked)
+	showWeight(weights[i]);
+
+	}
+	drawCrane(x, (canv.height-CRANE_HEIGHT)-20);
+	for(var i=0; i<weights.length; i++)
+	{
+	if((weights[i].hooked))
+		showWeight(weights[i]);
+	}
+
+
+
+
+};		// END OF DRAW 
+
+
+
+
+
+function game() {
+draw();
+
+}
+function keyPush(evt) {
+
+
+
+
+}
+
+function colorRect(leftX, TopY, width, height, drawColor)
+{
+	
+	ctx.fillStyle= drawColor;
+	ctx.strokeRect(leftX, TopY, width, height);
+	ctx.fillRect(leftX, TopY, width, height);
+	
+}
+
+
+
+function colorCircle(centerX, centerY, radius, ballColor)
+{
+	ctx.fillStyle=ballColor;
+	ctx.beginPath();
+	ctx.arc(centerX, centerY, radius, 0, Math.PI*2, true);
+	ctx.fill();
+
+
+}
+function checkhook(){
+for(var i=0; i<weights.length; i++)
+	{
+	if 	((ropeX>weights[i].x) && (ropeX<weights[i].x+weights[i].weight*2) && (ropeY>weights[i].y-weights[i].weight-10) && (ropeY<weights[i].y-10))
+		{
+		weights[i].hooked=true;
+		}
+
+
+	}
+
+
+
+};
+
+function showScale()
+{
+scalegoal=40;
+scaleweight=0;
+for(var i=0; i<weights.length; i++)
+{
+if(weights[i].onscale)
+	{
+	scaleweight=scaleweight+weights[i].weight;
+	}
+
+}
+
+
+var testangle=((scaleweight/scalegoal)*180)-180; 	
+colorRect(canv.width-160, ground-100, 20, 100,'grey');
+colorRect(canv.width-200, ground-5, 100,50, 'grey');
+	
+	ctx.fillStyle='white';
+	ctx.beginPath();
+	ctx.arc(canv.width-150, ground-100 , 50, 0, Math.PI, true);
+	ctx.stroke();
+	ctx.fill();
+	ctx.lineWidth=1;
+	line(canv.width-200, ground-100, canv.width-100, ground-100);	// Black line on bottom of gauge
+
+	
+if(scaleweight==scalegoal)
+{
+
+
+
+ctx.fillStyle='green';
+	ctx.beginPath();
+	ctx.arc(canv.width-150, ground-100 , 50, 0, Math.PI, true);
+	ctx.stroke();
+	ctx.fill();
+	ctx.lineWidth=1;
+	line(canv.width-200, ground-100, canv.width-100, ground-100);	// Black line on bottom of gauge
+
+}
+
+
+
+
+else if(testangle<0)
+	{
+	ctx.fillStyle='yellow';			// Trying to make a progress bar
+	ctx.beginPath();
+	ctx.arc(canv.width-150, ground-100 , 50, testangle/180*Math.PI, Math.PI, true);
+	ctx.stroke();
+	ctx.fill();
+
+
+
+	ctx.fillStyle='yellow';
+	ctx.beginPath();
+    	ctx.moveTo(canv.width-150, ground-100);
+   	ctx.lineTo(canv.width-200, ground-100);
+	var progressX=50 * Math.cos((testangle*Math.PI/180)) + canv.width-150;
+	var progressY=50 * Math.sin((testangle*Math.PI/180)) + ground-100;
+    	ctx.lineTo(progressX, progressY);
+    	ctx.fill();
+	}
+if(scaleweight>scalegoal)
+	{
+	ctx.fillStyle='red';
+	ctx.beginPath();
+	ctx.arc(canv.width-150, ground-100 , 50, 0, Math.PI, true);
+	ctx.stroke();
+	ctx.fill();
+	ctx.lineWidth=1;
+	line(canv.width-200, ground-100, canv.width-100, ground-100);	// Black line on bottom of gauge
+
+
+
+
+
+
+	}
+	
+
+
+}
+
+
+
+
+
+function showWeight(weight)
+{
+colorRect(weight.x, weight.y, weight.weight*2, weight.weight*2, 'black');
+	
+	ctx.beginPath();
+	ctx.arc(weight.x+(weight.weight*2)/2, weight.y+(weight.weight/3), weight.weight, 0, Math.PI, true);
+	ctx.stroke();
+	
+	ctx.fillStyle='white';
+	ctx.font = "bold " + weight.weight + "px Arial"
+	ctx.fillText( weight.weight, weight.x+(weight.weight*0.50), weight.y+(weight.weight*1.25));
+
+
+}
+
+
+
+
+class weight{
+	constructor(x,y, weight){
+	this.x=x;
+	this.y=y;
+	this.weight=weight;
+	this.hooked=false;
+	this.onscale=false;		// True/ false flag for if this weight is currently on scale. 
+	this.speed=0;
+	this.breakable=false;
+	};
+};
+
+
+
+
+</script>
