@@ -119,7 +119,7 @@ function draw(){
 	//console.log(images[floor(i)]);
 	imageObj.src=images[Math.floor(i)];
 	
-	
+/*	
 	
 	colorRect(0,0, canv.width, canv.height,'skyblue');
 	colorRect(treex,300, 50,250, 'saddlebrown');
@@ -138,13 +138,13 @@ function draw(){
 	colorCircle(treex+1225, 250, 125, 'green');
 	line(0, 550, 1800	, 550);
 
-
+*/
 	ctx.drawImage(imageObj,xpos,canv.height-300,300,300,);
 	
 
 	 }
 
-	i+=0.5;
+	i+=1;
 	//	xpos+=10;
 	if (i>4)
 	{
@@ -154,7 +154,7 @@ function draw(){
 treex-=20;
 	if(treex<-1300)
 	{
-	console.log(canv.width);
+	//console.log(canv.width);
 	treex=1000;
 	}
 	}
