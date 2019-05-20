@@ -1,4 +1,4 @@
-<canvas id="gc" width="400" height="600"></canvas>
+<canvas id="gc" width="600" height="600"></canvas>
 <script>
 window.onload=function() {
 
@@ -61,8 +61,15 @@ var angle=-45;
 var offset=300;
 var anglevel=1;
 
+var bubarrx=[];
+var bubarry=[];
+var fcount=0;
+var offvel=1;
+
 function draw(){
-	offset-=1;
+	fcount++;
+	ctx.strokeStyle='black';
+	offset-=offvel;
 	if (offset <(canv.width-200)*-1)
 		{
 		offset=500;
@@ -77,12 +84,45 @@ function draw(){
 	angle+=anglevel;
 
 		}
+	if(anglevel<0)
+		{
+	offvel*=0.99;
+		}
+	else
+		{
+		offvel=1;
+		}
+
 	// Turtle Color: 51, 182, 0
 	// Background color: 92, 133, 173
 	colorRect(0,0, canv.width, canv.height,"rgb(92, 133, 173)");
 	
 	ctx.lineWidth=3;
+
+if (bubarrx.length<15 && getRand(1,100)<=2.5)
+	{
+	bubarrx.push(500-offset);
+	bubarry.push(225);
+	}
 	
+for(var i=bubarrx.length-1; i>=0; i--)
+	{
+	bubarry[i]-=0.75;
+	
+	bubarrx[i]+=0.8 *getRand(-0.5,0.5);
+
+
+	drawBubble(bubarrx[i], bubarry[i]);
+	if(bubarry[i]<-4 || bubarrx[i]>canv.width || bubarrx[i]<0)
+		{
+		bubarrx.splice(i,1);
+		bubarry.splice(i,1);
+
+		}
+	}
+	ctx.strokeStyle='black';
+
+
 	// Drawing the turle head
 	ctx.translate(500-offset, 225);	
 	ctx.rotate(45*Math.PI/180);
@@ -109,8 +149,10 @@ function draw(){
 	halfCircle(350-offset,310, 100, "rgb(51,182,0)");
 	
 
-
-
+	ctx.fillStyle='black';
+	//ctx.font = "20px Mission Script"
+	ctx.font = "20px Comic Sans MS, cursive"
+	ctx.fillText("Mark Ash Originals",260-offset, 300)
 
 
 
@@ -186,6 +228,19 @@ ctx.stroke();
 
 }
 
+function drawBubble(bubblex, bubbley)
+{
+colorCircle(bubblex, bubbley, 10, 'skyblue');
+	colorCircle( ((10*0.6) * Math.cos((-45*Math.PI)/180)) + bubblex, ((10*0.6) * Math.sin((-45*Math.PI)/180)) + bubbley, 10/4, 'lightgray');
+	ctx.strokeStyle='lightgray';
+	ctx.beginPath();
+	ctx.arc(bubblex, bubbley, 10*0.8, (160*Math.PI)/180, (90*Math.PI)/180, true);
+	ctx.stroke();
+
+}
+
+
+
 
 
 function drawLeg(x,y, angle)
@@ -196,6 +251,11 @@ function drawLeg(x,y, angle)
 	ctx.rotate(-angle*Math.PI/180);
 	ctx.translate(-x,-y);
 
+}
+
+
+function getRand(min, max) {
+  return Math.random() * (max - min) + min;
 }
 
 </script>
