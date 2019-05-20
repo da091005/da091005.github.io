@@ -235,7 +235,12 @@ function drawBubble(bubblex, bubbley, bubblesize)
 {
 colorCircle(bubblex, bubbley, bubblesize, 'skyblue');
 	colorCircle( ((bubblesize*0.6) * Math.cos((-45*Math.PI)/180)) + bubblex, ((bubblesize*0.6) * Math.sin((-45*Math.PI)/180)) + bubbley, bubblesize/4, 'lightgray');
+	ctx.lineWidth=0.5;
+	drawCircle(bubblex, bubbley, bubblesize, 'black');
+	ctx.lineWidth=3;
 	ctx.strokeStyle='lightgray';
+	
+	//ctx.strokeStyle='black';
 	ctx.beginPath();
 	ctx.arc(bubblex, bubbley, bubblesize*0.8, (160*Math.PI)/180, (90*Math.PI)/180, true);
 	ctx.stroke();
@@ -259,5 +264,16 @@ function drawLeg(x,y, angle)
 function getRand(min, max) {
   return Math.random() * (max - min) + min;
 }
+
+
+function drawCircle(centerX, centerY, radius, ballColor)
+{
+	ctx.strokeStyle=ballColor;
+	ctx.beginPath();
+	ctx.arc(centerX, centerY, radius, 0, Math.PI*2, true);
+	ctx.stroke();
+}
+
+
 
 </script>
