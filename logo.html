@@ -81,10 +81,31 @@ function draw(){
 	// Background color: 92, 133, 173
 	colorRect(0,0, canv.width, canv.height,"rgb(92, 133, 173)");
 	
+	ctx.lineWidth=3;
+	
+	// Drawing the turle head
+	ctx.translate(500-offset, 225);	
+	ctx.rotate(45*Math.PI/180);
+	drawDiamond(0,0, 50,125);
+	ctx.rotate(-45*Math.PI/180);
+	ctx.translate(-(500-offset), -225);	
+	
+
+	ctx.translate(475-offset, 240);	
+	ctx.rotate(155*Math.PI/180);
+	halfCircle(0,0, 8,"black");
+	ctx.rotate(-155*Math.PI/180);
+	ctx.translate(-(475-offset), -240);
+
+
+	// End head
+		
 	drawLeg(300-offset, 275, angle);
 	drawLeg(300-offset, 300, angle);
 	drawLeg(400-offset, 275, angle);
 	drawLeg(400-offset, 300, angle);
+
+	//Drawing turtle body
 	halfCircle(350-offset,310, 100, "rgb(51,182,0)");
 	
 
