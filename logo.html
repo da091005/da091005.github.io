@@ -63,6 +63,7 @@ var anglevel=1;
 
 var bubarrx=[];
 var bubarry=[];
+var bubsizearr=[];
 var fcount=0;
 var offvel=1;
 
@@ -103,6 +104,7 @@ if (bubarrx.length<15 && getRand(1,100)<=2.5)
 	{
 	bubarrx.push(500-offset);
 	bubarry.push(225);
+	bubsizearr.push(getRand(5,20));
 	}
 	
 for(var i=bubarrx.length-1; i>=0; i--)
@@ -112,11 +114,12 @@ for(var i=bubarrx.length-1; i>=0; i--)
 	bubarrx[i]+=0.8 *getRand(-0.5,0.5);
 
 
-	drawBubble(bubarrx[i], bubarry[i]);
+	drawBubble(bubarrx[i], bubarry[i], bubsizearr[i]);
 	if(bubarry[i]<-4 || bubarrx[i]>canv.width || bubarrx[i]<0)
 		{
 		bubarrx.splice(i,1);
 		bubarry.splice(i,1);
+		bubsizearr.splice(i,1);
 
 		}
 	}
@@ -228,15 +231,14 @@ ctx.stroke();
 
 }
 
-function drawBubble(bubblex, bubbley)
+function drawBubble(bubblex, bubbley, bubblesize)
 {
-colorCircle(bubblex, bubbley, 10, 'skyblue');
-	colorCircle( ((10*0.6) * Math.cos((-45*Math.PI)/180)) + bubblex, ((10*0.6) * Math.sin((-45*Math.PI)/180)) + bubbley, 10/4, 'lightgray');
+colorCircle(bubblex, bubbley, bubblesize, 'skyblue');
+	colorCircle( ((bubblesize*0.6) * Math.cos((-45*Math.PI)/180)) + bubblex, ((bubblesize*0.6) * Math.sin((-45*Math.PI)/180)) + bubbley, bubblesize/4, 'lightgray');
 	ctx.strokeStyle='lightgray';
 	ctx.beginPath();
-	ctx.arc(bubblex, bubbley, 10*0.8, (160*Math.PI)/180, (90*Math.PI)/180, true);
+	ctx.arc(bubblex, bubbley, bubblesize*0.8, (160*Math.PI)/180, (90*Math.PI)/180, true);
 	ctx.stroke();
-
 }
 
 
