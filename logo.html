@@ -59,13 +59,14 @@ ctx.stroke();
 
 var angle=-45;
 var offset=300;
+//var offset =0;
 var anglevel=1;
 
 var bubarrx=[];
 var bubarry=[];
 var bubsizearr=[];
 var fcount=0;
-var offvel=1;
+var offvel=0;
 
 function draw(){
 	fcount++;
@@ -92,6 +93,7 @@ function draw(){
 	else
 		{
 		offvel=1;
+		//offvel=0;
 		}
 
 	// Turtle Color: 51, 182, 0
@@ -143,21 +145,32 @@ for(var i=bubarrx.length-1; i>=0; i--)
 
 	// End head
 		
-	drawLeg(300-offset, 275, angle);
-	drawLeg(300-offset, 300, angle);
-	drawLeg(400-offset, 275, angle);
-	drawLeg(400-offset, 300, angle);
+	drawLeg(300-offset, 290, angle);
+	drawLeg(300-offset, 310, angle);
+	drawLeg(400-offset, 290, angle);
+	drawLeg(400-offset, 310, angle);
 
 	//Drawing turtle body
-	halfCircle(350-offset,310, 100, "rgb(51,182,0)");
+	//halfCircle(350-offset,310, 100, "rgb(51,182,0)");
 	
+	//ctx.ellipse(x, y, radiusX, radiusY, rotation, startAngle, endAngle [, anticlockwise])
+	ctx.lineWidth=3;
+	ctx.beginPath();
+	ctx.lineWidth=5;	
+	ctx.ellipse(350- offset,310, 100, 60, 180*Math.PI/180, 0, Math.PI);
+	ctx.closePath();
+	ctx.stroke();
+	ctx.fillStyle="RGB(51,182,0)";
+	ctx.fill();
+
+
 
 	ctx.fillStyle='black';
 	//ctx.font = "20px Mission Script"
 	ctx.font = "20px Comic Sans MS, cursive"
-	ctx.fillText("Mark Ash Originals",260-offset, 300)
+	//ctx.fillText("Mark Ash Originals",260-offset, 300)
 
-
+	
 
 	
 	}
@@ -254,7 +267,7 @@ function drawLeg(x,y, angle)
 {
 	ctx.translate(x,y);
 	ctx.rotate(angle*Math.PI/180);
-	drawDiamond(0,0,50, 100);
+	drawDiamond(0,0,50, 125);
 	ctx.rotate(-angle*Math.PI/180);
 	ctx.translate(-x,-y);
 
