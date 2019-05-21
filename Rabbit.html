@@ -57,7 +57,9 @@ ctx.stroke();
 
 }
 
-
+var r=238;
+var g=238;
+var b=238;
 var bunnyx=0;
 var bunnyy=0;
 bunnysize=100;
@@ -77,8 +79,13 @@ var wiggle=false;
 
 function draw(){
 	colorRect(0,0, canv.width, canv.height, 'skyblue');
-
-
+	
+	if(y+bunnysize+17>canv.height-1)
+		{
+		r= Math.floor(getRand(0,255));
+	g= Math.floor(getRand(0,255));
+	b= Math.floor(getRand(0,255));
+		}
 
 	y+=yvel;
 	ctx.translate(x,y);
@@ -124,14 +131,14 @@ ctx.rotate(-10*Math.PI/180)
 	//ears
 	//ctx.beginPath();
 	ctx.lineWidth=3;
-	fillEllipse(bunnyx-30, bunnyy-120, 15, 50, Math.PI*2, 0, Math.PI*2, "RGB(238,238,238)");
+	fillEllipse(bunnyx-30, bunnyy-120, 15, 50, Math.PI*2, 0, Math.PI*2, "RGB(" +r +"," + g + "," + b +")");
 	ellipse(bunnyx-30, bunnyy-120, 15, 50, Math.PI*2, 0, Math.PI*2, "black");
 	fillEllipse(bunnyx-30, bunnyy-125, 6, 25, Math.PI*2, 0, Math.PI*2, "pink");
 if(wiggle)
 {
 ctx.rotate(20*Math.PI/180);
 }	
-	fillEllipse(bunnyx+30, bunnyy-120, 15, 50, Math.PI*2, 0, Math.PI*2, "RGB(238,238,238)");
+	fillEllipse(bunnyx+30, bunnyy-120, 15, 50, Math.PI*2, 0, Math.PI*2, "RGB(" +r +"," + g + "," + b +")");
 	ellipse(bunnyx+30, bunnyy-120, 15, 50, Math.PI*2, 0, Math.PI*2, "black");
 	fillEllipse(bunnyx+30, bunnyy-125, 6, 25, Math.PI*2, 0, Math.PI*2, "pink");
 if(wiggle)
@@ -141,16 +148,16 @@ wiggle=false;
 }
 	//ctx.closePath();
 	//ctx.stroke();
-	//ctx.fillStyle="RGB(238,238,238";
+	//ctx.fillStyle="RGB(r,g,b";
 	//ctx.fill();
 
 // Feet
 	ctx.lineWidth=4;
 	ellipse(bunnyx-30, bunnyy+100, 41,16, Math.PI*2, 0, Math.PI*2, "black");
-	fillEllipse(bunnyx-30, bunnyy+100, 40,15, Math.PI*2, 0, Math.PI*2, "RGB(238,238,238)");
+	fillEllipse(bunnyx-30, bunnyy+100, 40,15, Math.PI*2, 0, Math.PI*2, "RGB(" +r +"," + g + "," + b +")");
 
 	ellipse(bunnyx+40, bunnyy+100, 41,16, Math.PI*2, 0, Math.PI*2, "black");
-	fillEllipse(bunnyx+40, bunnyy+100, 40,15, Math.PI*2, 0, Math.PI*2, "RGB(238,238,238)");
+	fillEllipse(bunnyx+40, bunnyy+100, 40,15, Math.PI*2, 0, Math.PI*2, "RGB(" +r +"," + g + "," + b +")");
 
 
 
@@ -163,7 +170,7 @@ wiggle=false;
 	ctx.ellipse(bunnyx,bunnyy, bunnysize, bunnysize, 180*Math.PI/180, 0, Math.PI*2);
 	ctx.closePath();
 	ctx.stroke();
-	ctx.fillStyle="RGB(238,238,238)";
+	ctx.fillStyle="RGB(" +r +"," + g + "," + b +")"
 	ctx.fill();
 
 // End Head
@@ -176,8 +183,12 @@ wiggle=false;
 	//line(bunnyx+30, bunnyy-40, bunnyx+10, bunnyy-40);
 if(y+bunnysize+17<canv.height-15)
 	{
-	fillEllipse(bunnyx-30, bunnyy-40, 15,15, Math.PI*2, 0, Math.PI*2, "white");
+	
+
 	ctx.lineWidth=1;
+
+	fillEllipse(bunnyx-30, bunnyy-40, 15,15, Math.PI*2, 0, Math.PI*2, "white");
+	
 	ellipse(bunnyx-30, bunnyy-40, 16,16, Math.PI*2, 0, Math.PI*2, "black");
 	fillEllipse(bunnyx-30, bunnyy-40, 15,15, Math.PI*2, 0, Math.PI*2, "black");
 	fillEllipse(bunnyx-25, bunnyy-35, 3,3, Math.PI*2, 0, Math.PI*2, "white")
@@ -196,6 +207,9 @@ if(y+bunnysize+17<canv.height-15)
 	fillEllipse(bunnyx+25, bunnyy-45, 5,5, Math.PI*2, 0, Math.PI*2, "white")
 	}
 else{	
+	
+
+
 	ctx.lineWidth=4;
 	//ctx.strokeStyle="red";
 	line(bunnyx-45, bunnyy-40, bunnyx-10, bunnyy-40);
@@ -240,7 +254,7 @@ count++;
 	fillEllipse(bunnyx, bunnyy, 16,16, Math.PI, 0, Math.PI, "pink");
 
 
-
+//colorCircle(400,400, 400, "RGB(" +r +"," + g + "," + b +")");
 
 
 
