@@ -72,7 +72,7 @@ var carrangle=[];
 carrvel=2;
 carranglevel=1.5;
 var count=30;
-
+var wiggle=false;
 
 
 function draw(){
@@ -116,18 +116,29 @@ function draw(){
 	ctx.rotate(angle*Math.PI/180);
 	
 
-
+if(y+bunnysize+17>canv.height-15)
+{
+wiggle=true;
+ctx.rotate(-10*Math.PI/180)
+}
 	//ears
 	//ctx.beginPath();
 	ctx.lineWidth=3;
 	fillEllipse(bunnyx-30, bunnyy-120, 15, 50, Math.PI*2, 0, Math.PI*2, "RGB(238,238,238)");
 	ellipse(bunnyx-30, bunnyy-120, 15, 50, Math.PI*2, 0, Math.PI*2, "black");
 	fillEllipse(bunnyx-30, bunnyy-125, 6, 25, Math.PI*2, 0, Math.PI*2, "pink");
-	
+if(wiggle)
+{
+ctx.rotate(20*Math.PI/180);
+}	
 	fillEllipse(bunnyx+30, bunnyy-120, 15, 50, Math.PI*2, 0, Math.PI*2, "RGB(238,238,238)");
 	ellipse(bunnyx+30, bunnyy-120, 15, 50, Math.PI*2, 0, Math.PI*2, "black");
 	fillEllipse(bunnyx+30, bunnyy-125, 6, 25, Math.PI*2, 0, Math.PI*2, "pink");
-
+if(wiggle)
+{
+ctx.rotate(-10*Math.PI/180);
+wiggle=false;
+}
 	//ctx.closePath();
 	//ctx.stroke();
 	//ctx.fillStyle="RGB(238,238,238";
