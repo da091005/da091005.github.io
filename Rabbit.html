@@ -65,16 +65,62 @@ var angle=180;
 var x=300;
 var y=300;
 var yvel=2;
+
+var carrx=[];
+var carry=[];
+var carrangle=[];
+carrvel=2;
+carranglevel=1.5;
+
+
+
 function draw(){
 	colorRect(0,0, canv.width, canv.height, 'skyblue');
+
+for(var i=carrx.length-1; i>=0; i--)
+	{
+		carry[i]+=carrvel;
+		carrangle[i]+=carranglevel;
+	if(carry>canv.height)
+		{
+		carrx.splice(i, 1);
+		carry.splice(i,1);
+		carrangle.splice(i,1);
+		}
+	else
+		{
+		drawcarrot(carrx[i], carry[i], carrangle[i]);
+		
+		}
+
+
+
+
+
+	}
+
 	y+=yvel;
 	ctx.translate(x,y);
 	angle+=(yvel);
 	if(y+bunnysize+17>=canv.height)
 		{
 		yvel*=-1;
+
+		for(var i=0; i<getRand(0,10); i++)
+		{
+		carrx.push(getRand(0, canv.width));
+		carry.push(0);
+		carrangle.push(getRand(0,360));
 		}
 
+
+
+
+		}
+
+
+//drawcarrot(150,150, 0);
+//drawcarrot(100,100, 0);
 	if(yvel<0)
 		{
 		yvel+=0.01;
@@ -344,7 +390,45 @@ function openellipse(x, y, w, h, angle, startangle, endangle, col)
 }
 
 
+function drawcarrot(x,y, inangle)
+{
 
+ctx.translate(x,y);
+ctx.rotate(inangle*Math.PI/180);
+
+var carrotw=15;
+var carroth=30;
+
+colorCircle(0+carrotw/2, 0, carrotw/2, 'green');
+ctx.strokeStyle="orange";
+ctx.fillStyle="orange";
+//console.log(carroth);
+
+ctx.beginPath();
+ctx.moveTo(0,0);
+ctx.lineTo(0+carrotw, 0);
+ctx.lineTo(0+carrotw/2, 0+carroth);
+ctx.lineTo(0,0);
+ctx.closePath();
+ctx.stroke();	
+ctx.fill();
+ctx.strokeStyle="green";
+
+//line(0+carrotw/2,0, 0+carrotw/2	,-10);
+
+
+//colorRect(0,0, 10,10, "red");
+
+
+
+ctx.strokeStyle="black";
+
+ctx.rotate(-inangle*Math.PI/180);
+ctx.translate(-x,-y);
+
+
+
+}
 
 
 </script>
