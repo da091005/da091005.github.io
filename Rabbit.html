@@ -179,15 +179,18 @@ for(var i=carrx.length-1; i>=0; i--)
 
 
 // EYES
+
+	//line(bunnyx-30, bunnyy-40, bunnyx-10, bunnyy-40);
+	//line(bunnyx+30, bunnyy-40, bunnyx+10, bunnyy-40);
+if(y+bunnysize+17<canv.height-5)
+	{
 	fillEllipse(bunnyx-30, bunnyy-40, 15,15, Math.PI*2, 0, Math.PI*2, "white");
 	ctx.lineWidth=1;
 	ellipse(bunnyx-30, bunnyy-40, 16,16, Math.PI*2, 0, Math.PI*2, "black");
 	fillEllipse(bunnyx-30, bunnyy-40, 15,15, Math.PI*2, 0, Math.PI*2, "black");
 	fillEllipse(bunnyx-25, bunnyy-35, 3,3, Math.PI*2, 0, Math.PI*2, "white")
 	fillEllipse(bunnyx-35, bunnyy-45, 5,5, Math.PI*2, 0, Math.PI*2, "white")
-	openellipse(bunnyx-45, bunnyy-60, 10,5, 53*Math.PI/180, Math.PI*2, Math.PI, "black");
-	openellipse(bunnyx-35, bunnyy-65, 10,5, 53*Math.PI/180, Math.PI*2, Math.PI, "black");
-
+	
 
 
 	fillEllipse(bunnyx+30, bunnyy-40, 15,15, Math.PI*2, 0, Math.PI*2, "white");
@@ -199,11 +202,30 @@ for(var i=carrx.length-1; i>=0; i--)
 	fillEllipse(bunnyx+30, bunnyy-40, 15,15, Math.PI*2, 0, Math.PI*2, "black");
 	fillEllipse(bunnyx+35, bunnyy-35, 3,3, Math.PI*2, 0, Math.PI*2, "white")
 	fillEllipse(bunnyx+25, bunnyy-45, 5,5, Math.PI*2, 0, Math.PI*2, "white")
+	}
+else{	
+	ctx.lineWidth=4;
+	//ctx.strokeStyle="red";
+	line(bunnyx-45, bunnyy-40, bunnyx-10, bunnyy-40);
+	line(bunnyx+45, bunnyy-40, bunnyx+10, bunnyy-40);
+	}
+ctx.lineWidth=1;	
+// Lashes	
 	openellipse(bunnyx+45, bunnyy-60, 10,5, -55*Math.PI/180, Math.PI*2, Math.PI, "black");
 	openellipse(bunnyx+35, bunnyy-65, 10,5, -55*Math.PI/180, Math.PI*2, Math.PI, "black");
+	openellipse(bunnyx-45, bunnyy-60, 10,5, 53*Math.PI/180, Math.PI*2, Math.PI, "black");
+	openellipse(bunnyx-35, bunnyy-65, 10,5, 53*Math.PI/180, Math.PI*2, Math.PI, "black");
+
 	
+
+
+// Teef
 	colorRect(bunnyx, bunnyy,   10, 15, "white");
 	colorRect(bunnyx-10, bunnyy, 10, 15, "white");
+	
+
+
+// Nose
 	fillEllipse(bunnyx, bunnyy, 16,16, Math.PI, 0, Math.PI, "pink");
 
 
