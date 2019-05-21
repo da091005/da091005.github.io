@@ -61,7 +61,7 @@ ctx.stroke();
 var bunnyx=0;
 var bunnyy=0;
 bunnysize=100;
-var angle=180;
+var angle=0;
 var x=300;
 var y=300;
 var yvel=2;
@@ -71,37 +71,18 @@ var carry=[];
 var carrangle=[];
 carrvel=2;
 carranglevel=1.5;
+var count=30;
 
 
 
 function draw(){
 	colorRect(0,0, canv.width, canv.height, 'skyblue');
 
-for(var i=carrx.length-1; i>=0; i--)
-	{
-		carry[i]+=carrvel;
-		carrangle[i]+=carranglevel;
-	if(carry>canv.height)
-		{
-		carrx.splice(i, 1);
-		carry.splice(i,1);
-		carrangle.splice(i,1);
-		}
-	else
-		{
-		drawcarrot(carrx[i], carry[i], carrangle[i]);
-		
-		}
 
-
-
-
-
-	}
 
 	y+=yvel;
 	ctx.translate(x,y);
-	angle+=(yvel);
+	//angle+=(yvel);
 	if(y+bunnysize+17>=canv.height)
 		{
 		yvel*=-1;
@@ -182,7 +163,7 @@ for(var i=carrx.length-1; i>=0; i--)
 
 	//line(bunnyx-30, bunnyy-40, bunnyx-10, bunnyy-40);
 	//line(bunnyx+30, bunnyy-40, bunnyx+10, bunnyy-40);
-if(y+bunnysize+17<canv.height-5)
+if(y+bunnysize+17<canv.height-15)
 	{
 	fillEllipse(bunnyx-30, bunnyy-40, 15,15, Math.PI*2, 0, Math.PI*2, "white");
 	ctx.lineWidth=1;
@@ -222,8 +203,27 @@ ctx.lineWidth=1;
 // Teef
 	colorRect(bunnyx, bunnyy,   10, 15, "white");
 	colorRect(bunnyx-10, bunnyy, 10, 15, "white");
-	
 
+for(var i=carrx.length-1; i>=0; i--)
+	{
+if(Math.abs(carrx[i]-x)<=40 && Math.abs(carry[i]-y)<=30)
+	{
+	count=0;
+ 
+	carrx.splice(i,1);
+	carry.splice(i,1);
+	carrangle.splice(i,1);
+	}
+if(count <20)
+	{
+colorCircle(bunnyx, bunnyy, 15, "black");
+//fillEllipse(bunnyx, bunnyy, Math.PI*2, Math.PI*2, 0, "black");
+	}	
+
+
+	}
+
+count++;
 
 // Nose
 	fillEllipse(bunnyx, bunnyy, 16,16, Math.PI, 0, Math.PI, "pink");
@@ -247,11 +247,38 @@ ctx.lineWidth=1;
 
 
 
-
-
 ctx.rotate(-angle*Math.PI/180);
 ctx.translate(-x,-y);
+
+
+for(var i=carrx.length-1; i>=0; i--)
+	{
+		carry[i]+=carrvel;
+		carrangle[i]+=carranglevel;
+	if(carry>canv.height)
+		{
+		carrx.splice(i, 1);
+		carry.splice(i,1);
+		carrangle.splice(i,1);
+		}
+	else
+		{
+		drawcarrot(carrx[i], carry[i], carrangle[i]);
+		
+		}
+
+
+
+
+
 	}
+
+
+	}
+
+
+
+
 
 
 
