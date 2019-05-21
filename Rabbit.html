@@ -61,13 +61,31 @@ ctx.stroke();
 var bunnyx=0;
 var bunnyy=0;
 bunnysize=100;
-var angle=1;
-
+var angle=180;
+var x=300;
+var y=300;
+var yvel=2;
 function draw(){
 	colorRect(0,0, canv.width, canv.height, 'skyblue');
-	ctx.translate(300,300);
-	angle+=1;
-	
+	y+=yvel;
+	ctx.translate(x,y);
+	angle+=(yvel);
+	if(y+bunnysize+17>=canv.height)
+		{
+		yvel*=-1;
+		}
+
+	if(yvel<0)
+		{
+		yvel+=0.01;
+		}
+	if(yvel>=0)
+		{
+		yvel=2.5;
+		}
+
+
+
 	ctx.rotate(angle*Math.PI/180);
 	
 
@@ -88,7 +106,13 @@ function draw(){
 	//ctx.fillStyle="RGB(238,238,238";
 	//ctx.fill();
 
+// Feet
+	ctx.lineWidth=4;
+	ellipse(bunnyx-30, bunnyy+100, 41,16, Math.PI*2, 0, Math.PI*2, "black");
+	fillEllipse(bunnyx-30, bunnyy+100, 40,15, Math.PI*2, 0, Math.PI*2, "RGB(238,238,238)");
 
+	ellipse(bunnyx+40, bunnyy+100, 41,16, Math.PI*2, 0, Math.PI*2, "black");
+	fillEllipse(bunnyx+40, bunnyy+100, 40,15, Math.PI*2, 0, Math.PI*2, "RGB(238,238,238)");
 
 
 
@@ -155,8 +179,10 @@ function draw(){
 
 
 
+
+
 ctx.rotate(-angle*Math.PI/180);
-ctx.translate(-300,-300);
+ctx.translate(-x,-y);
 	}
 
 
