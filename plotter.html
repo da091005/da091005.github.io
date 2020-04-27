@@ -1,0 +1,403 @@
+Objective: Visualize a bubble sort using a "Bubble Class" <br>
+Start Time: 0315	<br>
+End Time:   0400	<hr>
+<title> Bubble Sort </title>
+<canvas id="gc" width="1300" height="550"></canvas>
+<script>
+window.onload=function() {
+
+
+	canv=document.getElementById("gc");
+	ctx=canv.getContext("2d");
+	canv.addEventListener("click", function(){
+ 		 calcBall();
+			});
+
+	canv.addEventListener('mousemove', function(evt){ var mousePos= calculateMousePos(evt);
+							mouseX=mousePos.x;
+							mouseY=mousePos.y;
+							});
+
+	document.addEventListener("keydown", keyPush);
+
+
+	setInterval(function() {
+				
+				draw();
+				},
+				1000/600);
+	
+}
+
+function calcBall()
+{
+let r;
+let c;
+
+//r=canv.width/cols;
+r=Math.floor(mouseX/(canv.width/cols));
+c=Math.floor(mouseY/(canv.height/rows));
+
+bubblearr[index(r,c)].color="rgb(0,0,0)";
+plot.push(index(r,c));
+
+
+//console.log(r,c);
+
+
+
+
+}
+
+function calculateMousePos(evt){
+	var rect= canv.getBoundingClientRect();
+	var root= document.documentElement;
+	var mouseX = evt.clientX - rect.left - root.scrollLeft;
+	var mouseY = evt.clientY - rect.top - root.scrollTop	
+	return{
+	x: mouseX, 
+	y: mouseY
+	}
+	};
+
+
+var canv;
+var ctx;
+var bubblearr =[];		// An array of bubbles!! 
+var runonce=true;		// init flag
+var s=0;
+var plot=[337, 402, 467, 532, 597, 338, 339, 468, 471, 536, 601, 602, 603, 538, 473, 477, 476, 475, 540, 605, 606, 607, 349, 349, 414, 479, 544, 609, 416, 480, 546, 612, 352, 987, 1053, 1119, 1055, 991, 1119, 1184, 1184, 1249, 1124, 1123, 1188, 1253, 1254, 1190, 1125, 1255, 1127, 1192, 1257, 1258, 1259, 1129, 1194];
+var t=1;
+
+
+
+
+
+var keyPush = function(evt){
+switch(evt.keyCode)
+	{
+}
+	
+};
+
+
+//Function for drawing lines
+
+var line = function (x1, y1, x2, y2)
+{
+ctx.beginPath();
+ctx.moveTo(x1,y1);
+ctx.lineTo(x2,y2);
+ctx.stroke();
+
+
+}
+
+function showBubble(bubble)
+	{
+	
+	this.bubble=bubble;
+	
+	colorCircle(bubble.x, bubble.y, bubble.size, bubble.color);
+	colorCircle( ((bubble.size*0.6) * Math.cos((-45*Math.PI)/180)) + bubble.x, ((bubble.size*0.6) * Math.sin((-45*Math.PI)/180)) + bubble.y, bubble.size/4, 'darkgray');
+	ctx.strokeStyle='darkgray';
+	ctx.beginPath();
+	ctx.arc(bubble.x, bubble.y, bubble.size*0.8, (160*Math.PI)/180, (90*Math.PI)/180, true);
+	ctx.stroke();
+	
+	};
+
+function initBubble()
+{
+var currentsize=5;	// start bubble size at 5 and increase by 3
+for(var i=0; i<23; i++)
+	{
+bubblearr[i]= new bubble(0+(i*currentsize), 600-(i*currentsize)/2, currentsize);
+	currentsize= currentsize +2;
+	}
+
+
+bubblearr= randomize(bubblearr)
+
+runonce=false;
+
+};
+
+function swap(pos1, pos2, bubblearr)
+	{
+	swappedarr=bubblearr;
+	var temp;
+	temp = swappedarr[pos1].size;
+	swappedarr[pos1].size= swappedarr[pos2].size;
+	swappedarr[pos2].size= temp;
+	return swappedarr;
+	};
+
+function randomize(bubblearr)
+	{
+	var rnd;	// random pos to swap to
+	len = bubblearr.length	// length of array
+	
+	for(var i=0; i<len; i++)
+		{
+		rnd=Math.floor(Math.random() * len);
+		bubblearr= swap(i, rnd, bubblearr)
+		}	
+
+	return bubblearr;
+	}
+
+
+var numbub;
+var bubsize=10;
+var rows;
+var cols;
+var tempx;
+var tempy;
+var rnd;
+var color=[];
+var count=0;
+
+
+
+function draw(){
+	colorRect(0,0, canv.width, canv.height, 'white');
+	if(runonce)
+		{
+		runonce=false;
+		rows = Math.floor(canv.height/ (bubsize)/2);
+		cols = Math.floor(canv.width/ (bubsize)/2);
+		
+		numbub=rows*cols;
+		//bubblearr.length=0;
+		for(var i=0; i<rows; i++)
+			{
+			if(i%5 ==0)
+				{
+			color=randomcolor();
+			//color=[0,0,255];
+				}
+				count++;
+				for(var j=0; j<cols; j++)
+					{
+									
+					bubblearr.push(new bubble(bubsize*j*2 + bubsize , bubsize*i*2+bubsize, bubsize, rgb(color[0],color[1],color[2])));
+						
+					} 
+		
+			
+			}
+		for (var i=0; i<plot.length; i++)
+			{
+			var ind=plot[i];
+			bubblearr[ind].color="rgb(0,0,0)";
+			}
+		//changeCols();
+		for (var i=0; i<bubblearr.length; i++)
+			{
+			bubblearr[i].x=getRand(0+bubsize, canv.width-(bubsize*2));
+			bubblearr[i].y=getRand(0+bubsize, canv.height-(bubsize*2));
+			//console.log("HERE");
+
+			bubblearr[i].vel=getVel(bubblearr[i]);
+			bubblearr[i].disx=Math.abs(bubblearr[i].x-bubblearr[i].desx);
+			bubblearr[i].disy=Math.abs(bubblearr[i].y-bubblearr[i].desy);
+			}
+		//console.log(getDistance(bubblearr[0].x, bubblearr[0].y, bubblearr[0].desx, bubblearr[0].desy));
+
+
+		}
+
+	for (var i=0; i<bubblearr.length; i++)
+		{
+		
+		showBubble(bubblearr[i]);
+		
+		
+		if(bubblearr[i].disx>1)
+			{
+			
+			bubblearr[i].x+=bubblearr[i].vel[0];
+			bubblearr[i].disx-=Math.abs(bubblearr[i].vel[0]);
+			}
+	
+		if(bubblearr[i].disy>1)
+			{
+			bubblearr[i].y+=bubblearr[i].vel[1];
+			bubblearr[i].disy-=Math.abs(bubblearr[i].vel[1]);
+			}
+		if((bubblearr[i].disx!=0) || (bubblearr[i].disy!=0))
+			{
+			
+		if((bubblearr[i].disx<Math.abs(bubblearr[i].vel[0])) || (bubblearr[i].disy<1*Math.abs(bubblearr[i].vel[1])))
+				{
+				
+				bubblearr[i].vel=getVel(bubblearr[i]);
+				}
+			}
+		}
+
+	
+	}
+
+
+
+
+
+
+function keyPush(evt) {
+
+
+
+
+}
+
+function colorRect(leftX, TopY, width, height, drawColor)
+{
+	
+	ctx.fillStyle= drawColor;
+	ctx.strokeRect(leftX, TopY, width, height);
+	ctx.fillRect(leftX, TopY, width, height);
+	
+}
+
+
+
+function colorCircle(centerX, centerY, radius, ballColor)
+{
+	ctx.fillStyle=ballColor;
+	ctx.beginPath();
+	ctx.arc(centerX, centerY, radius, 0, Math.PI*2, true);
+	ctx.fill();
+
+
+}
+
+
+
+class bubble {
+	constructor(x,y, size, color){
+	this.desx = x;
+	this.desy = y;
+	this.size = size;
+	this.color=color;
+	this.vel=[0,0];
+	this.x=x;
+	this.y=y;
+	this.disx=0;
+	this.disy=0;
+
+
+		}
+
+	}
+
+
+
+function randomcolor()
+{
+var r=getRand(100,255);
+var g=getRand(100,255);
+var b=getRand(100,255);
+var color=[];
+
+color[0]=r;
+color[1]=g;
+color[2]=b;
+
+return color;
+}
+
+function getRand(min, max) {
+  return Math.round(Math.random() * (max - min) + min);
+}
+
+
+function rgb(r, g, b){
+  return "rgb("+r+","+g+","+b+")";
+}
+
+
+
+function getDistance(x1, y1, x2, y2)
+{
+
+var dist;
+let a=(x2-x1)*(x2-x1);
+let b=(y2-y1)*(y2-y1);
+dist=Math.sqrt(b+a);
+return dist;
+}
+
+function getVel(bubin)
+{
+var mult=10;
+var vel=[0,0];
+var bubble=bubin;
+var dist=getDistance(bubble.x, bubble.y, bubble.desx, bubble.desy);
+if(Math.abs(bubble.x-bubble.desx)<1*mult)
+	{	
+	vel[0]=0;
+	bubble.x=bubble.desx;
+	
+	}
+else if(bubble.x<bubble.desx)
+	{
+	vel[0]=1*mult;
+	}
+else if(bubble.x>bubble.desx)
+	{
+	vel[0]=-1*mult;
+	}
+if(Math.abs(bubble.y-bubble.desy)<1*mult)
+	{	
+	vel[1]=0;
+	bubble.y=bubble.desy;
+	}
+else if(bubble.y<bubble.desy)
+	{
+	vel[1]=1*mult;
+	}
+else if( bubble.y>bubble.desy)
+	{
+	vel[1]=-1*mult;
+	}
+
+
+
+
+return vel;
+
+
+}
+
+
+function index(r, c)
+	{
+	
+	return r+(c*cols);
+	
+	}
+
+function changeCols()
+	{
+for(var i=0; i<rows; i++)
+	{
+	for(var j=0; j<cols; j++)
+		{
+		//console.log(i,j);
+		//console.log(index(i,j));
+		if((j%4>=2) && (0==0))
+			{
+		//bubblearr[index(i,j)].color="rgb(0,0,0)"
+			}
+			}
+
+	}
+
+
+
+	}
+
+
+</script>
