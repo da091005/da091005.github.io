@@ -1,0 +1,411 @@
+<canvas id="gc" width="1000" height="600"></canvas>
+<script>
+window.onload=function() {
+
+
+	canv=document.getElementById("gc");
+	ctx=canv.getContext("2d");
+	//canv.addEventListener('mousemove', function(evt){ var mousePos= calculateMousePos(evt);
+							//paddle1Y= mousePos.y-PADDLE_HEIGHT/2;
+							//});
+
+	document.addEventListener("keydown", keyPush);
+
+
+	setInterval(function() {
+				
+				draw();
+				},
+				1000/60);
+	
+}
+
+
+
+
+
+var canv;
+var ctx;
+
+
+
+
+
+
+
+
+
+
+var keyPush = function(evt){
+switch(evt.keyCode)
+	{
+}
+	
+};
+
+
+//Function for drawing lines
+
+var line = function (x1, y1, x2, y2)
+{
+ctx.beginPath();
+ctx.moveTo(x1,y1);
+ctx.lineTo(x2,y2);
+ctx.stroke();
+
+
+}
+
+
+
+	var xarr=[];
+	var yarr=[];
+	var xvelarr=[];
+	var yvelarr=[];
+	var size=[];
+	var emotionarr=[];
+	var speed=1.5;
+	var lifecount=0;
+	var numsmiles=100;
+	var saturation;
+	var totlifecount=0;
+	var avglifecount=0;
+	var loops=0;
+	var basesize=10;
+	var infectionrate=10;
+	var smilearr=[];
+
+
+var runonce=true;
+function draw(){
+if(loops<1)
+{
+	colorRect(0,0, canv.width, canv.height, 'skyblue');
+
+
+	if(runonce)
+		{
+		smilearr.length=0;
+		for (var i=0; i<numsmiles; i++)
+			{
+				{
+				var randx=getRand(0+basesize, canv.width-basesize);;
+				var randy=getRand(0+basesize, canv.height-basesize);;
+				smilearr.push(new smile(randx, randy, basesize));
+				smilearr[i].vel[0]= getRand(-1,1)*speed;
+				smilearr[i].vel[1]= getRand(-1,1)*speed;
+				}
+			
+	
+			
+			}
+		deconflict();
+		smilearr[0].emotion=false;
+		runonce=false;
+		}
+	
+	saturation=true;
+	for(var i=0; i<smilearr.length && saturation==true; i++)
+		{
+			if(smilearr[i].emotion)
+				{
+				saturation=false;
+				}
+		
+		}
+	if(!saturation)
+		{
+		lifecount++;
+		}
+	else
+		{
+		for (var i=0; i<smilearr.length; i++)
+			{
+			smilearr[i].vel[0]=smilearr[i].vel[1]=0;
+			}
+		
+		
+		runonce=true;
+		totlifecount+=lifecount;
+		avglifecount=totlifecount/ (loops+1)
+		console.log("LIFECYCLE: " + (loops+1) + " COMPLETE");
+		console.log("Cycles this life: " + lifecount);
+		console.log("Infection Rate: " + infectionrate + "%");
+		console.log("Average Cycles with " + numsmiles + " participants: " + avglifecount);
+		console.log("");
+		loops++;
+		lifecount=0;
+		
+
+
+
+
+		}
+
+	for(var i=0; i<smilearr.length; i++)
+		{
+	
+	
+	//drawFace(smilearr[i].x, smilearr[i].y, smilearr[i].size, smilearr[i].emotion);
+		for (var j=0; j<smilearr[i].infected.length; j++)
+			{
+			var ind=smilearr[i].infected[j];
+			ctx.lineWidth=0.3*smilearr[i].infected.length;
+			line(smilearr[i].x, smilearr[i].y, smilearr[ind].x, smilearr[ind].y);
+			ctx.lineWidth=1;
+
+			}
+	drawFace(smilearr[i].x, smilearr[i].y, smilearr[i].size, smilearr[i].emotion);
+	smilearr[i].x+= smilearr[i].vel[0] * speed;
+	smilearr[i].y+= smilearr[i].vel[1] * speed;
+	
+	if((smilearr[i].x <= 0 + smilearr[i].size))
+		{
+		smilearr[i].x=0+smilearr[i].size;
+		smilearr[i].vel[0] *=-1;
+		}
+	if(smilearr[i].x >= canv.width-smilearr[i].size)
+		{
+		smilearr[i].x=canv.width-smilearr[i].size;
+		smilearr[i].vel[0] *=-1;
+		
+		}
+	if(smilearr[i].y <= 0 + smilearr[i].size)
+		{
+		smilearr[i].y=0+smilearr[i].size;
+		smilearr[i].vel[1]*=-1;
+		}
+	if(smilearr[i].y > canv.height - smilearr[i].size)
+		{
+		smilearr[i].y=canv.height-smilearr[i].size;
+		smilearr[i].vel[1] *=-1;
+		}
+	
+		}
+	calcHit();
+		
+
+	}
+else
+	{
+	for(var i=0; i<smilearr.length; i++)
+		{
+		drawFace(smilearr[i].x, smilearr[i].y, smilearr[i].size, smilearr[i].emotion);
+
+		}
+
+	}
+
+}
+
+function drawFace(inx,iny,insize, inhappy)
+	{
+	let size=insize;
+	let x=inx;
+	let y=iny;
+	let happy=inhappy;
+
+
+	if(happy)
+		{
+		colorCircle(x, y, size, 'yellow');
+		}
+	else
+		{
+		colorCircle(x, y, size, 'red');
+		}
+	drawCircle(x, y, size, 'black');
+	colorCircle(x-size/3, y-size/3, size/6, 'black');
+	colorCircle(x+size/3, y-size/3, size/6, 'black');
+
+
+	ctx.beginPath();
+	if(happy)
+		{
+	ctx.arc(x, y+size/4, size/2, Math.PI, 0, true);
+		}
+	else
+		{
+	ctx.arc(x, y+size/2, size/2, 0, Math.PI, true);
+		}
+	ctx.fill();
+
+
+
+
+
+
+
+
+	}
+
+
+function keyPush(evt) {
+
+
+
+
+}
+
+function colorRect(leftX, TopY, width, height, drawColor)
+{
+	
+	ctx.fillStyle= drawColor;
+	ctx.strokeRect(leftX, TopY, width, height);
+	ctx.fillRect(leftX, TopY, width, height);
+	
+}
+
+
+
+function colorCircle(centerX, centerY, radius, ballColor)
+{
+	ctx.fillStyle=ballColor;
+	ctx.beginPath();
+	ctx.arc(centerX, centerY, radius, 0, Math.PI*2, true);
+	ctx.fill();
+
+
+}
+
+function drawCircle(centerX, centerY, radius, ballColor)
+{
+	ctx.fillStyle=ballColor;
+	ctx.beginPath();
+	ctx.arc(centerX, centerY, radius, 0, Math.PI*2, true);
+	//ctx.fill();
+	ctx.stroke();
+
+}
+
+
+
+// Goes through the array and if any smileys bump into each other, 
+// swaps their velocities and turns them into a frowny
+function calcHit()
+	{
+var count=0;
+var distance;
+//console.log(xarr);
+	for (var s=0; s<smilearr.length; s++)
+		{
+		for (var j=s+1; j<smilearr.length; j++)
+			{
+			distance= getDistance(smilearr[s].x, smilearr[s].y, smilearr[j].x, smilearr[j].y);
+			if (distance <= smilearr[s].size + smilearr[j].size)
+				{
+				if((smilearr[s].emotion==false))		
+					{
+					if((getRand(1,100) <=infectionrate) && (smilearr[j].emotion))
+						{
+					smilearr[j].emotion=false;
+					smilearr[s].infected.push(j);					
+						}
+					}
+				if(smilearr[j].emotion==false)
+					{
+					if((getRand(1,100) <=infectionrate) && (smilearr[s].emotion))
+						{
+						smilearr[s].emotion=false;
+						smilearr[j].infected.push(s);
+
+						}
+					
+
+					}
+
+
+
+
+
+				smilearr[s].vel[0]=getRand(-1,1)*speed;
+				smilearr[s].vel[1]=getRand(-1,1)*speed;
+
+				smilearr[j].vel[0]=getRand(-1,1)*speed;
+				smilearr[j].vel[1]=getRand(-1,1)*speed;
+								
+				
+				}
+			}
+
+		}
+
+
+
+
+
+
+
+	}
+
+
+function getDistance(x1, y1, x2, y2)
+{
+
+var dist;
+
+
+let a=(x2-x1)*(x2-x1);
+let b=(y2-y1)*(y2-y1);
+
+
+dist=Math.sqrt(b+a);
+
+return dist;
+}
+
+
+function getRand(min, max) {
+  return (Math.random() * (max - min) + min);
+}
+
+
+function deconflict(){
+var finished=false;
+var distance;
+
+do
+{
+finished=true;
+for (var i=0; i<smilearr.length; i++)
+	{
+	for (var j=i+1; j<smilearr.length; j++)
+		{
+		distance=getDistance(smilearr[i].x, smilearr[i].y, smilearr[j].x, smilearr[j].y);
+		if (distance <= smilearr[i].size+smilearr[j].size)
+			{
+			smilearr[i].x=getRand(0+basesize, canv.width-basesize*2);
+			smilearr[i].y=getRand(0+basesize, canv.height-basesize*2);
+			
+			smilearr[j].x=getRand(0+basesize, canv.width-basesize*2);
+			smilearr[j].y=getRand(0+basesize, canv.height-basesize*2);
+			
+			finished=false;
+			}
+
+
+		}
+
+
+	}
+
+} while (!finished)
+
+}
+
+
+class smile{
+	constructor(x,y, size){
+	this.size = size;
+	//this.color=color;
+	this.vel=[0,0];
+	this.x=x;
+	this.y=y;
+	this.infected=[];
+	this.emotion=true;
+
+		}
+
+}
+
+</script>
