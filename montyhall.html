@@ -16,7 +16,7 @@ window.onload=function() {
 				
 				draw();
 				},
-				1000);
+				1000/60);
 	
 }
 
@@ -37,6 +37,9 @@ var ctx;
 
 
 var keyPush = function(evt){
+slow=!slow;
+
+
 switch(evt.keyCode)
 	{
 }
@@ -68,20 +71,29 @@ var c2=0;
 var c3=0;
 var step=0;
 var wins=0;
-var trials=10000;
+var trials=1000000;
 var runonce=true;
 var count=0;
 var showoutput=true;
+var slow=false;
+var frame=0;
+
 
 function draw(){
-if(runonce)
-{
-if(count<trials);
-	{
-		count++;
-		//runTest1();
-		runTest2();
-}
+frame++;
+if((slow) && (frame%80==0) || (!slow))
+	{	
+	if(runonce)
+		{
+		if(count<trials);
+			{
+			count++;
+			//runTest1();
+			runTest2();
+			progressBar();
+		 
+			}		
+		}
 }
 
 function drawCar(pos)
@@ -154,9 +166,10 @@ colorRect(point1[0]-50, point1[1]-100, 100, 50, 'blue');
 function drawElim(elim)
 {
 ctx.lineWidth=30;
+var offset=200;
 ctx.strokeStyle='red';
-line(elim * canv.width/3+250, canv.height/2-80, elim* canv.width/3+350, canv.height/2+70);
-line(elim * canv.width/3+250, canv.height/2+70, elim* canv.width/3+350, canv.height/2-80);
+line(elim * canv.width/3+250-offset, canv.height/2-80, elim* canv.width/3+350-offset, canv.height/2+70);
+line(elim * canv.width/3+250-offset, canv.height/2+70, elim* canv.width/3+350-offset, canv.height/2-80);
 ctx.lineWidth=1;
 }
 
@@ -244,6 +257,7 @@ if(count==trials)
 
 function runTest2() 
 {
+		var elim;
 		winningpos=getRandomInt(3);
 		selection=getRandomInt(3);
 		colorRect(0,0, canv.width, canv.height,'skyblue');
@@ -260,32 +274,49 @@ function runTest2()
 			goat2=1;
 			break;
 		}
-if(winningpos==selection)
+if(selection==winningpos)
 	{
-	drawGoat(goat1);
-	drawElim(goat1);
+	
+	//drawCar(winningpos);
+	//drawGoat(goat1);
+	//drawElim(goat1);
+	//drawGoat(goat2);
+	elim=goat1;
+	selection=goat2;
 	}
 else if (selection==goat1)
 		{
-		drawGoat(goat2);
-		drawElim(goat2);
+		
+		//drawGoat(goat2);
+		//drawElim(goat2);
+		//drawGoat(goat1);
+		//drawCar(winningpos);
+		elim=goat1;
+		selection=winningpos;
 		}
 else if (selection == goat2)
 		{
-		drawGoat(goat1);
-		drawElim(goat1);
+		//drawGoat(goat1);
+		//drawElim(goat1);
+		//drawGoat(goat2);
+		//drawCar(winningpos);
+		elim=goat1;
+		selection=winningpos;
 		}
-drawSelection(selection);
 
+if(showoutput)
+	{
+	drawSelection(selection);
+	drawCar(winningpos);
+	drawGoat(goat1);
+	drawGoat(goat2);
+	drawElim(elim);
+	}
 
-
-
-
-
-
-
-
-
+if(winningpos==selection)
+	{
+	wins++;
+	}
 
 if(count==trials)
 {
@@ -297,7 +328,17 @@ if(count==trials)
 
 
 
+function progressBar(){
+var increment=canv.width/trials;
 
+colorRect(0, canv.height-100, increment*count, 100, 'green');
+
+
+
+
+
+
+}
 
 
 
