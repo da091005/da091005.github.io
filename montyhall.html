@@ -63,31 +63,26 @@ var winningpos;		// Winning position where car is
 var selection;		// position that we are selecting
 var goat1;
 var goat2;
-
-
+var c1=0;
+var c2=0;
+var c3=0;
+var step=0;
+var wins=0;
+var trials=10000;
+var runonce=true;
+var count=0;
+var showoutput=true;
 
 function draw(){
-	
-	winningpos=Math.round(getRand(0,2));
-	colorRect(0,0, canv.width, canv.height,'skyblue');
-	 	drawCar(winningpos);
-		drawSelection(Math.round(getRand(0,2)));
-switch (winningpos)
+if(runonce)
+{
+if(count<trials);
 	{
-	case 0: goat1=1;
-		goat2=2;
-		break
-	case 1: goat1=0;
-		goat2=2;
-		break;
-	case 2: goat1=0;
-		goat2=1;
-		break;
-	}
-drawGoat(goat1);
-drawGoat(goat2);
-		
-	}
+		count++;
+		//runTest1();
+		runTest2();
+}
+}
 
 function drawCar(pos)
 	{
@@ -107,7 +102,7 @@ line(pos*canv.width/3+70, canv.height/2+30, pos*canv.width/3+130, canv.height/2+
 
 function drawGoat(pos)
 	{
-var point1=[pos*canv.width/3+100, canv.height/2];
+var point1=[pos*canv.width/3+100, canv.height/2+20];
 
 
 colorRect(point1[0]-15, point1[1]+10, 5,30, 'black');
@@ -154,11 +149,15 @@ ctx.lineTo(point1[0], point1[1]);
 ctx.stroke();
 ctx.fill();
 colorRect(point1[0]-50, point1[1]-100, 100, 50, 'blue');
+}
 
-
-
-
-
+function drawElim(elim)
+{
+ctx.lineWidth=30;
+ctx.strokeStyle='red';
+line(elim * canv.width/3+250, canv.height/2-80, elim* canv.width/3+350, canv.height/2+70);
+line(elim * canv.width/3+250, canv.height/2+70, elim* canv.width/3+350, canv.height/2-80);
+ctx.lineWidth=1;
 }
 
 
@@ -192,12 +191,118 @@ function colorCircle(centerX, centerY, radius, ballColor)
 }
 
 
-
+function getRandomInt(max) {
+  return Math.floor(Math.random() * Math.floor(max));
+}
 
 function getRand(min, max) {
   return (Math.random() * (max - min) + min);
 }
 
+function runTest1()
+{
+		winningpos=getRandomInt(3);
+		selection=getRandomInt(3);
+		colorRect(0,0, canv.width, canv.height,'skyblue');
+		if(winningpos==selection)
+			{
+			wins++;
+			}
 
+
+
+	if(showoutput)
+	{
+	 	drawCar(winningpos);
+		drawSelection(selection);
+	switch (winningpos)
+		{
+		case 0: goat1=1;
+			goat2=2;
+			break
+		case 1: goat1=0;
+			goat2=2;
+			break;
+		case 2: goat1=0;
+			goat2=1;
+			break;
+		}
+	drawGoat(goat1);
+	drawGoat(goat2);
+	}
+	//drawElim(0);
+	
+if(count==trials)
+{
+	count++;
+	alert(trials + " trials complete! Total wins = " + wins + ". With a win percentage of: " + wins/trials*100 + "%");
+	runonce=false;	
+}
+}
+
+//Select "door", Reveal Goat, change door
+
+function runTest2() 
+{
+		winningpos=getRandomInt(3);
+		selection=getRandomInt(3);
+		colorRect(0,0, canv.width, canv.height,'skyblue');
+
+		switch (winningpos) // Put goats where they go
+		{
+		case 0: goat1=1;
+			goat2=2;
+			break
+		case 1: goat1=0;
+			goat2=2;
+			break;
+		case 2: goat1=0;
+			goat2=1;
+			break;
+		}
+if(winningpos==selection)
+	{
+	drawGoat(goat1);
+	drawElim(goat1);
+	}
+else if (selection==goat1)
+		{
+		drawGoat(goat2);
+		drawElim(goat2);
+		}
+else if (selection == goat2)
+		{
+		drawGoat(goat1);
+		drawElim(goat1);
+		}
+drawSelection(selection);
+
+
+
+
+
+
+
+
+
+
+
+if(count==trials)
+{
+	count++;
+	alert(trials + " trials complete! Total wins = " + wins + ". With a win percentage of: " + wins/trials*100 + "%");
+	runonce=false;	
+}
+}
+
+
+
+
+
+
+
+
+
+}
 
 </script>
