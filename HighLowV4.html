@@ -1,0 +1,805 @@
+
+<canvas id="gc" width="900" height="600"></canvas>
+<script>
+// This version of the high, low guesser
+// counts how many cards remain that are
+// higher and how many are lower and
+// makes a decision based off of that average
+window.onload=function() {
+
+
+	canv=document.getElementById("gc");
+	ctx=canv.getContext("2d");
+	canv.addEventListener('mousemove', function(evt) { var mousePos=calculateMousePos(evt);
+								mouseX=mousePos.x;
+								mouseY=mousePos.y;
+							});
+	document.addEventListener("keydown", keyPush);
+
+
+	setInterval(function() {
+				
+				draw();
+				},
+				1000/60);
+	//draw();
+	
+}
+
+
+
+
+
+var canv;
+var ctx;
+
+
+
+
+function calculateMousePos(evt){
+	var rect= canv.getBoundingClientRect();
+	var root= document.documentElement;
+	
+	var mouseX = evt.clientX - rect.left - root.scrollLeft;
+	var mouseY = evt.clientY - rect.top - root.scrollTop	
+	return{
+	x: mouseX, 
+	y: mouseY
+	}
+	};
+
+
+
+
+
+var keyPush = function(evt){
+autoplay=!autoplay;
+switch(evt.keyCode)
+	{
+}
+	
+};
+
+
+//Function for drawing lines
+
+var line = function (x1, y1, x2, y2)
+{
+ctx.beginPath();
+ctx.moveTo(x1,y1);
+ctx.lineTo(x2,y2);
+ctx.stroke();
+
+
+}
+
+function showDeck(deck)
+	{
+	canv=document.getElementById("gc");
+	ctx=canv.getContext("2d");
+	//colorRect(0,0, canv.width, canv.height,'skyblue');
+	var cardwidth= (canv.width-65)/13;
+	var cardheight= cardwidth*1.4	;
+	var cardx=1;		// X pos of card
+	var cardy=1;		// Y pos of card
+	var suit=" ";		// suit to print
+	var count=0;		// used to make the output print pretty
+	
+	//for (var i=0; i<deck.length; i++)
+	for (var i=deck.length-1; i>=0; i--)
+	{
+	if((count%13===0) && (count>0))
+		{
+		cardy+=cardheight+5;
+		cardx=1;
+		}
+	colorRect(cardx, cardy, cardwidth, cardheight, 'white');	// Print Card outline
+	switch (deck[i].suit)
+		{
+		case "Hearts":
+		ctx.fillStyle='red';
+		suit="♥";
+		break;
+		case "Diamonds":
+		ctx.fillStyle='red';
+		suit="♦";
+		break;
+		
+		case "Spades":
+		ctx.fillStyle='black';
+		suit="♠";
+		break;
+		
+		case "Clubs":
+		ctx.fillStyle='black';
+		suit="♣";
+		break;
+		}
+	ctx.font = "30px Arial"
+	ctx.fillText(suit,cardx+(cardwidth/2)-10,cardy+(cardheight/2)+10);
+	ctx.fillText(deck[i].name,cardx+(cardwidth/2)-10,cardy+25);
+	ctx.fillText(deck[i].name,cardx+(cardwidth/2) -10,cardy+(cardheight-5));
+	
+	cardx+=cardwidth+5;
+	count++;
+	}
+	};
+
+
+
+function showCard(x,y,card)
+	{
+	cardx=x;
+	cardy=y;
+	var wid= 57 // width of card
+	var ht= 80; // height of card
+	var suit;	// suit of card passed in
+	colorRect(cardx, cardy, wid, ht, 'white');
+	switch(card.suit)
+	{
+		case "Hearts":
+		ctx.fillStyle='red';
+		suit="♥";
+		break;
+		case "Diamonds":
+		ctx.fillStyle='red';
+		suit="♦";
+		break;
+		
+		case "Spades":
+		ctx.fillStyle='black';
+		suit="♠";
+		break;
+		
+		case "Clubs":
+		ctx.fillStyle='black';
+		suit="♣";
+		break;
+		}
+	ctx.font = "30px Arial"
+	ctx.fillText(suit,cardx+(wid/2)-10,cardy+(ht/2)+10);
+	ctx.fillText(card.name,cardx+(wid/2)-10,cardy+25);
+	ctx.fillText(card.name,cardx+(wid/2) -10,cardy+(ht-5));
+	
+	};
+
+
+function shuffle(deck)
+	{
+	var len=deck.length;
+	var temp;		// Temporary spot to hold card
+	var rnd;		// random int to swap cards with 
+	for (var i=0; i<len; i++)
+		{
+		rnd=Math.floor(Math.random()*len);		
+		temp=deck[i];
+		deck[i]=deck[rnd];
+		deck[rnd]=temp; 
+		}
+	return deck;
+	};
+
+
+function deck(){
+	
+	this.names = ['2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K', 'A'];
+	this.suits= ['Diamonds', 'Hearts', 'Spades', 'Clubs'];
+	var cards=[]
+	for (var s=0; s<this.suits.length; s++)
+		{
+		for(var n=0; n<this.names.length; n++)
+			{
+			cards.push(new card(n+2, this.names[n], this.suits[s]));
+			}
+		}
+	return cards;
+	};
+
+
+class track {
+	constructor() {
+		this.lower=0;
+		this.higher=0;
+		this.pulled=0;		
+		}
+
+
+	}
+
+// Create a class to store wrong guesses
+class wrong {
+	constructor(firstC, secondC, hrmain, lrmain, guess, strk){
+		this.firstC=firstC;
+		this.secondC=secondC;
+		this.hrmain=hrmain;
+		this.lrmain=lrmain;
+		this.diff=Math.abs(hrmain-lrmain);
+		switch(guess)
+			{
+			case 1: this.guess="Lower";
+			break;
+			case 2: this.guess="Higher";
+			break;
+
+			}
+		this.strk=strk;
+		}
+
+
+
+
+	}
+
+
+class card {
+	constructor(value, name, suit) {
+	this.suit=suit;
+	this.name=name;	
+	this.value=value;
+		}
+	
+	}
+
+
+
+
+var deckA;			// Deck THat we are using
+var deckB;			// Second Deck to see if it changes the guessing outcome
+var deckC;			// Third Deck
+var numdeck=1;			// Tracks the number of decks to be used
+var runonce=true;		// Setup Flag
+var wins=0;			// Average of correct guesses
+var guesses=0;			// How many guesses have been made
+var correct=0;			// Number of correct guesses
+var firstCard;			
+var nextCard;
+var lower=0;			// Number of times the next card is lower
+var higher=0;			// Number of times the next card is higher
+var same=0;			// Number of times the next card is same
+var showonce=true;		// Show the results only once
+var trials=1000;		// Number of decks want to go through
+var count=1;			// Number of deck gone through already
+var guess=0;
+var buttonsize;			// Size of the buttons to click
+var button1x;			// XPos of button1
+var button1y;			// YPos of button2
+var autoplay=false;		// Flag used to make the computer play
+var button2x;			// XPos of button2
+var button2y;			// YPos of Button2
+
+var button3x;			// AUTO play
+var button3y;			// AUTO PLAY
+var ind;			// INdex used for bias array
+var threshold=0.5;		// Assigned number for difference of bias'
+var trackarr = [];		// Array of tracking percentages. 
+var remaining = [];		// Array tracking how many remaining of each number
+var wrongarr = [];		// Array of wrong guesses
+var streak = [];		// Tracks last 10 high/low 
+var strklen = 10;		// Max streak to track
+var hleft;			// How many higher left
+var lleft;			// How many lower left
+var setup=true;			// another Setup function
+var pool=[];
+
+var low;
+var high;
+var left;
+var temp;
+var rnd;
+
+// array off Bias for each card
+var bias =[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
+
+
+function draw(){
+if(setup)
+	{
+	for(var i=0; i<13; i++)
+		{
+		trackarr.push(new track());
+		}
+	for(var i=0; i<100; i++)
+		{
+		pool.push(0);
+		}
+	
+	setup=false;
+	}
+colorRect(0,0, canv.width, canv.height,'skyblue');
+if(count<=trials)
+{
+	if(runonce)
+		{
+
+		
+		deckA=deck();				// Create a new deck of cards
+		for(var j=0; j<numdeck-1; j++)
+			{
+			deckB=deck();
+			for(var i=0; i<52; i++)
+				{
+				deckA.push(deckB.pop());		// If you want to add more than once deck of cards
+				}
+			}
+		deckA=shuffle(deckA);			// Shuffle the deck
+		for(var i=0; i<13; i++)
+			{
+			remaining[i]=numdeck*4;		
+			}
+		firstCard=deckA.pop();
+			remaining[firstCard.value-2]--;
+			//console.log(remaining);
+		runonce=false;
+		}
+showCard(canv.width/2, canv.height/2-150, firstCard);
+		
+
+}
+	else if(showonce)
+		{
+		showonce=false;
+		alert("TRIALS OVER");
+		
+		}
+	
+		showHud();
+		showBias();
+		showChoices();
+	if(autoplay)
+	{
+	ind=(firstCard.value-2)*2;
+	low=Math.floor(bias[ind]);
+	high=Math.floor(bias[ind+1]);
+	//console.log(low, high);
+	left=100 - (low+high);
+	
+	
+	// Where we make our choice
+	hleft= higherRemaining(firstCard.value);
+	lleft= lowerRemaining(firstCard.value);
+	if(hleft>lleft)
+		{
+		guess=2;
+		}
+	else if(lleft > hleft)
+		{
+		guess =1;
+		}
+	else if(lleft == hleft)
+		{
+		guess=getRandomInt(2)+1;
+		if(high<low)
+			{
+			guess=1;
+			}
+		else if (low< high)
+			{
+			guess=2;
+			}
+		else if (low==high)
+			{
+		guess=getRandomInt(2)+1;
+		
+			}
+		
+		}
+
+
+	checkGuess(guess);
+	//wrongarr.pop();
+	//checkStreak();
+	
+	
+	}
+
+	
+}
+
+
+
+
+
+
+function keyPush(evt) {
+
+
+
+
+}
+
+function colorRect(leftX, TopY, width, height, drawColor)
+{
+	
+	ctx.fillStyle= drawColor;
+	ctx.strokeRect(leftX, TopY, width, height);
+	ctx.fillRect(leftX, TopY, width, height);
+	
+}
+
+
+function drawRect(leftX, TopY, width, height, drawColor)
+{
+	
+	ctx.strokeStyle= drawColor;
+	ctx.strokeRect(leftX, TopY, width, height);
+	//ctx.fillRect(leftX, TopY, width, height);
+	ctx.strokeStyle='black';
+}
+
+
+
+function colorCircle(centerX, centerY, radius, ballColor)
+{
+	ctx.fillStyle=ballColor;
+	ctx.beginPath();
+	ctx.arc(centerX, centerY, radius, 0, Math.PI*2, true);
+	ctx.fill();
+
+
+}
+
+
+
+function showChoices()
+{
+buttonsize=50;
+button1x=canv.width/2 -140;
+button1y=canv.height/2-100;
+
+button2x=canv.width/2 +200;
+button2y=canv.height/2-100;
+
+button3x=0+buttonsize;
+button3y=0+buttonsize;
+
+colorCircle(button1x, button1y, buttonsize, 'blue');
+ctx.font = "30px Arial";
+ctx.fillStyle='black';
+	ctx.fillText("LOWER", canv.width/2-200, canv.height/2-150);
+	
+
+colorCircle(button2x, button2y, 50, 'blue');
+ctx.font = "30px Arial";
+ctx.fillStyle='black';
+	ctx.fillText("HIGHER", canv.width/2+145, canv.height/2-150);
+
+
+
+colorCircle(button3x, button3y, 50, 'blue');
+ctx.font = "30px Arial";
+ctx.fillStyle='black';
+	ctx.fillText("AUTO", 0+buttonsize-35, buttonsize*2+25);
+
+
+
+
+}
+
+function showHud()
+{
+var size=100;
+colorRect(0, canv.height-size, canv.width, size, 'grey');
+ctx.font = "15px Arial";
+ctx.fillStyle='black';
+	ctx.fillText("GUESSES: " + guesses, 0, canv.height-size+ 25);
+	ctx.fillText("WINS: " + wins, 0, canv.height-size+ 50);
+	ctx.fillText("WINNING AVERAGE: " + (wins/guesses*100).toFixed(2), 0, canv.height-size+ 75);
+ctx.font = "30px Arial";
+	ctx.fillText("TRIAL: " + count + " of " + trials, 400, canv.height-size + 25);
+
+}
+
+
+function showBias() // This function will show bar graphs of current biast distributions. 
+{
+var numbias=26;
+var wid=canv.width/numbias;
+var tophud=canv.height-205;
+
+var nms = ['2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K', 'A'];
+
+
+for(var i=0; i<numbias; i++)
+	{
+	switch (i%2)
+		{
+		case 0: colorRect(i*wid, tophud+(100-bias[i]), wid, bias[i], 'blue');
+			ctx.lineWidth=3;
+			drawRect(i*wid, tophud, wid*2, 102, 'red');
+			ctx.lineWidth=1;
+			ctx.fillStyle='black';
+			ctx.font = "30px Arial";
+			ctx.fillText(nms[i/2], i*wid +25, tophud-10);
+		break;
+		case 1:	colorRect(i*wid, tophud+(100-bias[i]), wid, bias[i], 'green');
+		break;
+		}
+
+		ctx.lineWidth=3;
+	//drawRect(i*(i%2)*wid, tophud, wid*2, 102, 'red');
+		ctx.lineWidth=1;
+	}
+
+
+
+
+
+canv.onclick=function(){checkClick(mouseX, mouseY);};		// Constantly waiting for clicks
+
+}
+
+function checkClick(mouseX, mouseY)
+{
+var clicked=false;
+if(getDistance(mouseX, mouseY, button1x, button1y)<buttonsize)
+	{
+	guess=1;
+	clicked=true;
+	}
+
+else if(getDistance(mouseX, mouseY, button2x, button2y)<buttonsize)
+	{
+	guess=2;
+	clicked=true;
+	}
+
+else if(getDistance(mouseX, mouseY, button3x, button3y)<buttonsize)
+	{
+	autoplay=!autoplay;
+	}
+
+
+
+
+if (clicked)
+{
+checkGuess(guess);
+}
+}
+
+
+function checkGuess(guess)
+{
+var ind; 	// used for accessing bias array
+var trackind;	// used for accessing trackarr
+if(deckA.length)
+	{
+	guesses++;
+	nextCard=deckA.pop();
+	
+	switch(guess)
+		{
+		case 1: if(nextCard.value<firstCard.value)
+				{
+				wins++;
+				if(streak.length<strklen)
+					{
+					streak.push("L");
+					}
+				else
+					{
+					streak.splice(0,1);
+					streak.push("L");
+					}
+				//console.log("WINNER");
+				ind=(firstCard.value-2)*2;
+				trackind=firstCard.value-2;
+				trackarr[trackind].lower++;
+				trackarr[trackind].pulled++;	
+					bias[ind]=(trackarr[trackind].lower/trackarr[trackind].pulled) *100;
+					bias[ind+1]=(trackarr[trackind].higher/trackarr[trackind].pulled) *100;
+								
+				}
+			else if(nextCard.value >firstCard.value)
+				{
+				if(streak.length<strklen)
+					{
+					streak.push("H");
+					}
+				else
+					{
+					streak.splice(0,1)
+					streak.push("H");
+					}
+				deckA.push(nextCard);
+				var hmain=higherRemaining(firstCard.value);
+				var lmain=lowerRemaining(firstCard.value);
+				deckA.pop();
+				if((hmain==lmain) || (Math.abs(hmain-lmain) > 35))
+				{
+				var stk=streakToString();
+				wrongarr.push(new wrong(firstCard.name, nextCard.name, hmain, lmain,guess,stk));
+				}
+				ind=(firstCard.value-2)*2;
+				trackind=firstCard.value-2;
+				trackarr[trackind].higher++;
+				trackarr[trackind].pulled++;	
+					bias[ind]=(trackarr[trackind].lower/trackarr[trackind].pulled) *100;
+					bias[ind+1]=(trackarr[trackind].higher/trackarr[trackind].pulled) *100;
+				}
+			else if(nextCard.value== firstCard.value)
+				{
+				wins++;
+				if(streak.length<strklen)
+					{
+					streak.push("S");
+					}
+				else
+					{
+					streak.splice(0,1)
+					streak.push("S");
+					}
+				trackind=firstCard.value-2;
+				trackarr[trackind].pulled++
+				}
+				
+				break;
+		case 2: if(nextCard.value>firstCard.value)
+				{
+				wins++;
+				if(streak.length<strklen)
+					{
+					streak.push("H");
+					}
+				else
+					{
+					streak.splice(0,1)
+					streak.push("H");
+					}
+				//console.log("WINNER");
+				ind=(firstCard.value-2)*2;
+				trackind=firstCard.value-2;
+				trackarr[trackind].higher++;
+				trackarr[trackind].pulled++;	
+					bias[ind]=(trackarr[trackind].lower/trackarr[trackind].pulled) *100;
+					bias[ind+1]=(trackarr[trackind].higher/trackarr[trackind].pulled) *100;
+				
+				}
+			else if(nextCard.value< firstCard.value)
+				{
+				ind=(firstCard.value-2)*2;
+				if(streak.length<strklen)
+					{
+					streak.push("L");
+					}
+				else
+					{
+					streak.splice(0,1)
+					streak.push("L");
+					}
+
+				deckA.push(nextCard);
+				var hmain=higherRemaining(firstCard.value);
+				var lmain=lowerRemaining(firstCard.value);
+				deckA.pop();
+				if((hmain==lmain) || (Math.abs(hmain-lmain) > 35))
+				{
+				var stk=streakToString();
+				wrongarr.push(new wrong(firstCard.name, nextCard.name, hmain, lmain,guess,stk));
+				}
+				trackind=firstCard.value-2;
+				trackarr[trackind].lower++;
+				trackarr[trackind].pulled++;	
+					bias[ind]=(trackarr[trackind].lower/trackarr[trackind].pulled) *100;
+					bias[ind+1]=(trackarr[trackind].higher/trackarr[trackind].pulled) *100;
+				}
+				else if(nextCard.value== firstCard.value)
+				{
+				wins++;
+				if(streak.length<strklen)
+					{
+					streak.push("S");
+					}
+				else
+					{
+					streak.splice(0,1)
+					streak.push("S");
+					}
+				trackind=firstCard.value-2;
+				trackarr[trackind].pulled++
+				}
+				break;
+		}
+firstCard=nextCard;
+remaining[firstCard.value-2]--;
+guess=0;
+//draw();
+
+	}
+else 
+	{
+		if(count<trials)
+		{
+		runonce=true;
+		count++;
+		//draw();
+		}
+
+
+	}
+
+
+
+
+
+
+}
+
+
+function getRandomInt(max) {
+  return Math.floor(Math.random() * Math.floor(max));
+}
+
+
+function getDistance(x1, y1, x2, y2)
+{
+
+var dist;
+
+
+let a=(x2-x1)*(x2-x1);
+let b=(y2-y1)*(y2-y1);
+
+
+dist=Math.sqrt(b+a);
+
+return dist;
+}
+
+
+function higherRemaining(current)
+{
+var ind = current-1;
+var total=0;
+for (var i=ind; i<remaining.length; i++)
+	{
+	total=total + remaining[i];
+	}
+
+return total;
+}
+
+function lowerRemaining(current)
+{
+var ind = current-2;
+var total = 0;
+for (var i=0; i<ind; i++)
+	{
+	total=total+remaining[i];
+	}
+return total;
+
+}
+
+function streakToString()
+{
+var st= "";
+
+for (var i=0; i<streak.length; i++)
+	{
+	st=st+streak[i];
+	}
+
+//console.log(st);
+return st;
+}
+
+
+function checkStreak()		// Gives a console log if streak is 3
+{
+if(streak.length==10)
+	{
+	if ((streak[9]== streak[8]) && (streak[8] == streak[7]) && (streak[7] == streak[6]) && (streak[6] == streak[5])&& (streak[5] == streak[4]))
+	{
+	console.log("Streak");
+	autoplay=false;
+	}
+	}
+
+
+
+
+
+}
+
+</script>
