@@ -1,0 +1,582 @@
+<canvas id="gc" width="1300" height="600"></canvas>
+<script>
+// In this version I try to make the plack parts of the "Map" filled in 
+window.onload=function() {
+
+
+	canv=document.getElementById("gc");
+	ctx=canv.getContext("2d");
+	//canv.addEventListener('mousemove', function(evt){ var mousePos= calculateMousePos(evt);
+							//paddle1Y= mousePos.y-PADDLE_HEIGHT/2;
+							//});
+
+	document.addEventListener("keydown", keyPush);
+
+
+	setInterval(function() {
+				
+				draw();
+				},
+				1000/2);
+	
+}
+
+
+
+
+
+var canv;
+var ctx;
+
+
+
+
+
+
+
+
+
+
+var keyPush = function(evt){
+
+console.log(evt.keyCode);
+switch(evt.keyCode)
+	{
+case 32:rounded=!rounded;		// Press space to change how it's displayed
+break;
+case 67: // Press C to change 1 dot. 
+	for(var i=0; i<10; i++)
+		{
+	var rnd= getRand(0, valarr.length-1);
+	//var rnd=i;
+	if (valarr[rnd]==0)
+		{
+	valarr[rnd]=1;
+		}
+	else if (valarr[rnd]==1)
+		{
+	valarr[rnd]=0;
+		}
+		}				 
+break;
+case 83: //scrollScreen();
+scroll=!scroll;
+break;
+
+case 37:
+doorpct-=1;
+break;
+
+case 38:
+xarr.length=0;
+yarr.length=0;
+doorarr.length=0;
+valarr.length=0; 
+size+=5;
+runonce=true;
+break;
+
+case 39:
+doorpct+=1;
+break;
+
+
+
+
+case 40:
+runonce=true;
+xarr.length=0;
+yarr.length=0;
+doorarr.length=0;
+valarr.length=0; 
+size-=5;
+break;
+ 
+}
+	
+};
+
+
+//Function for drawing lines
+
+var line = function (x1, y1, x2, y2)
+{
+ctx.beginPath();
+ctx.moveTo(x1,y1);
+ctx.lineTo(x2,y2);
+ctx.stroke();
+
+
+}
+
+var runonce = true; 	// Flag used for a setup function 
+var xarr=[];		// Array of x coordinates for points
+var yarr=[];		// Array of y coordinates for points
+var valarr=[];		// Array of vallues for the points
+var doorarr=[];		// Array of weather or not certain lines are doors
+var rows;		// Number of Rows of dots
+var cols;		// Number of Cols of dots
+var col;
+var count=0;
+var doorpct=4;		// % of lines that will end up as doors
+var size=50;		// Size of the squares
+var rounded=false;	// Flag to determine if lines will be straight or rounded
+var scroll=false;
+var show=false;
+var door=0;
+
+function draw(){
+
+	if(runonce)
+		{
+		rows=Math.floor(canv.height/size)+2;
+		cols=Math.floor(canv.width/size)+2;
+		
+		for(var i=0; i<rows; i++)
+			{
+			for(var j=0; j<cols; j++)
+				{
+				xarr.push(j * size);
+				yarr.push(i * size);
+				valarr.push(getRand(0,1));
+				doorarr.push(getRand(0,100));
+				} 
+		
+			}
+		runonce = false;
+		}
+	
+	count=0;
+	//colorRect(0,0, canv.width, canv.height,'skyblue');
+	colorRect(0,0, canv.width, canv.height,'black');
+	for (var i=xarr.length-1; i>=0; i--)
+		{
+		if(valarr[i]==0)
+			{
+			col="white";
+			}	
+		else if(valarr[i]==1)
+			{
+			col='blue';
+			}
+		//colorCircle(xarr[i], yarr[i], 1, col);
+		drawLine(i);
+		}
+	if(scroll)
+			{
+			scrollScreen();
+			}
+	
+
+	
+	}
+
+
+
+
+
+
+
+
+function colorRect(leftX, TopY, width, height, drawColor)
+{
+	
+	ctx.fillStyle= drawColor;
+	ctx.strokeRect(leftX, TopY, width, height);
+	ctx.fillRect(leftX, TopY, width, height);
+	
+}
+
+
+
+function colorCircle(centerX, centerY, radius, ballColor)
+{
+	ctx.fillStyle=ballColor;
+	ctx.beginPath();
+	ctx.arc(centerX, centerY, radius, 0, Math.PI*2, true);
+	ctx.fill();
+
+
+}
+
+
+function drawCircle(centerX, centerY, radius, ballColor)
+{
+	ctx.strokeStyle=ballColor;
+	ctx.beginPath();
+	ctx.arc(centerX, centerY, radius, 0, Math.PI*2, true);
+	ctx.stroke();
+
+
+}
+
+
+function ind(x, y)
+{
+return (y * cols + x);
+}
+
+function randomcolor()
+{
+var r=getRand(1,255);
+var g=getRand(1,255);
+var b=getRand(1,255);
+var color=[];
+
+color[0]=r;
+color[1]=g;
+color[2]=b;
+
+return color;
+}
+
+function rgb(r, g, b){
+  return "rgb("+r+","+g+","+b+")";
+}
+
+function getRand(min, max) {
+  return Math.round((Math.random() * (max - min) + min));
+}
+
+function indexToCoord(ind)
+{
+let coord=[];	// X,Y coordinates to return. 
+
+coord[0]=ind% cols;
+coord[1]=(ind - (ind % cols)) / cols;
+if(show)
+{
+//console.log(coord[0], coord[1]);
+}
+return{
+	
+	x: coord[0], 
+	y: coord[1]
+	}
+
+
+}
+
+
+function rtnBin(index)	// Given an index, return the binary configuration of that square
+{
+var binary="0000"; 	// Binary string to return
+let coord= indexToCoord(index);
+var bit0= valarr[ind(coord.x, coord.y)];
+var bit1= valarr[ind(coord.x+1, coord.y)];
+var bit2= valarr[ind(coord.x+1, coord.y+1)];
+var bit3= valarr[ind(coord.x, coord.y+1)];
+
+if ((coord.x>=cols-1) && (coord.y<rows-1))
+	{
+	var bit0= valarr[ind(coord.x, coord.y)];
+	var bit1= valarr[ind(0, coord.y)];
+	var bit2= valarr[ind(0, coord.y+1)];
+	var bit3= valarr[ind(coord.x, coord.y+1)];
+	//bit0=0;
+	//bit1=0;
+	//bit2=0;
+	//bit3=0;
+
+	}
+
+else if(coord.y>= rows-1)
+	{
+	bit0=0;
+	bit1=0;
+	bit2=0;
+	bit3=0;
+	}
+
+//console.log(bit0, bit1, bit2, bit3);
+
+binary = bit0.toString();
+binary += bit1.toString();
+binary += bit2.toString();
+binary += bit3.toString();
+
+
+return binary;
+}
+
+
+
+
+function drawLine(index)
+{
+let binary = rtnBin(index);
+//rounded=false;
+ctx.strokeStyle='skyblue';
+door=doorarr[index];
+if(door<doorpct)
+	{
+	ctx.strokeStyle='red';
+	ctx.fillStyle='red';
+	}
+else
+	{
+	ctx.strokeStyle='skyblue';
+	ctx.fillStyle='black';
+	}
+
+let a= {'x': xarr[index]+ size/2, 'y': yarr[index]};
+let b= {'x': xarr[index]+ size, 'y': yarr[index] + size/2};
+let c= {'x': xarr[index]+ size/2, 'y': yarr[index] + size};
+let d= {'x': xarr[index], 'y': yarr[index]+ size/2}; 
+
+if(rounded)
+	{
+ctx.fillStyle='skyblue';
+ctx.strokeStyle='skyblue';
+if(door<doorpct)
+	{
+	ctx.strokeStyle='red';
+	ctx.fillStyle='red';
+	}
+else
+	{
+	ctx.strokeStyle='skyblue';
+	ctx.fillStyle='skyblue';
+	}
+switch (binary)
+	{
+	
+	case "0001": //line(c.x, c.y, d.x, d.y);
+	ctx.beginPath();
+	ctx.moveTo(xarr[index], yarr[index]);
+	ctx.lineTo(xarr[index]+size, yarr[index]);
+	ctx.lineTo(xarr[index]+size, yarr[index]+size);
+	ctx.lineTo(xarr[index]+size/2, yarr[index]+size);
+	ctx.lineTo(xarr[index], yarr[index]+size/2);
+	ctx.lineTo(xarr[index], yarr[index]);
+	//ctx.arc(xarr[index], yarr[index]+size, size/2, 270*Math.PI/180, 0, false);
+	ctx.fill();
+	break;
+	case "0010": //line(b.x, b.y, c.x, c.y);
+		ctx.beginPath();
+		ctx.moveTo(xarr[index], yarr[index]);
+		ctx.lineTo(xarr[index]+size, yarr[index]);
+		ctx.lineTo(xarr[index]+size, yarr[index]+size/2);
+		ctx.lineTo(xarr[index]+size/2, yarr[index]+size);
+		ctx.lineTo(xarr[index], yarr[index]+size);
+		ctx.lineTo(xarr[index], yarr[index]);
+		//ctx.arc(xarr[index], yarr[index]+size, size/2, 270*Math.PI/180, 0, false);
+		ctx.fill();
+		ctx.stroke();
+	break;
+	case "0011": //line(b.x, b.y, d.x, d.y);
+		ctx.beginPath();
+		ctx.moveTo(xarr[index], yarr[index]);
+		ctx.lineTo(xarr[index]+size, yarr[index]);
+		ctx.lineTo(xarr[index]+size, yarr[index]+size);
+		ctx.lineTo(xarr[index], yarr[index]+size);
+		ctx.lineTo(xarr[index], yarr[index]);
+		ctx.fill();
+		ctx.stroke();
+	break;
+	case "0100": //line(a.x, a.y, b.x, b.y); 
+		ctx.beginPath();
+		ctx.moveTo(xarr[index], yarr[index]);
+		ctx.lineTo(xarr[index]+size/2, yarr[index]);
+		ctx.lineTo(xarr[index]+size, yarr[index]+size/2);
+		ctx.lineTo(xarr[index]+size, yarr[index]+size);
+		ctx.lineTo(xarr[index], yarr[index]+size);
+		ctx.lineTo(xarr[index], yarr[index]);
+		ctx.fill();
+		ctx.stroke();
+	break;
+	case "0101": //line(a.x, a.y, b.x, b.y);
+			//line(c.x, c.y, d.x, d.y);
+		ctx.beginPath();
+		ctx.moveTo(xarr[index], yarr[index]);
+		ctx.lineTo(xarr[index]+size/2, yarr[index]);
+		ctx.lineTo(xarr[index]+size, yarr[index]+size/2);
+		ctx.lineTo(xarr[index]+size, yarr[index]+size);
+		ctx.lineTo(xarr[index]+size/2, yarr[index]+size);
+		ctx.lineTo(xarr[index], yarr[index]+size/2);
+		ctx.lineTo(xarr[index], yarr[index]);
+		ctx.fill();
+		ctx.stroke();
+	break;
+	case "0110": //line(c.x, c.y, a.x, a.y);
+		ctx.beginPath();
+		ctx.moveTo(xarr[index], yarr[index]);
+		ctx.lineTo(xarr[index]+size/2, yarr[index]);
+		ctx.lineTo(xarr[index]+size/2, yarr[index]+size);
+		ctx.lineTo(xarr[index], yarr[index]+size);		
+		ctx.lineTo(xarr[index], yarr[index]);
+		ctx.fill();
+		ctx.stroke();
+	break;
+	case "0111": //line(a.x, a.y, d.x, d.y);
+		ctx.beginPath();
+		ctx.moveTo(xarr[index], yarr[index]);
+		ctx.lineTo(xarr[index]+size/2, yarr[index]);
+		ctx.lineTo(xarr[index], yarr[index]+size/2);
+		ctx.lineTo(xarr[index], yarr[index]);
+		ctx.fill();
+		ctx.stroke();
+	break;
+	case "1000": //line(a.x, a.y, d.x, d.y);
+		ctx.beginPath();
+		ctx.moveTo(xarr[index]+size/2, yarr[index]);
+		ctx.lineTo(xarr[index]+size, yarr[index]);
+		ctx.lineTo(xarr[index]+size, yarr[index]+size);
+		ctx.lineTo(xarr[index], yarr[index]+size);
+		ctx.lineTo(xarr[index], yarr[index]+size/2);
+		ctx.lineTo(xarr[index]+size/2, yarr[index]);
+		ctx.fill();
+		ctx.stroke();
+	break;
+	case "1001": //line(c.x, c.y, a.x, a.y);
+		ctx.beginPath();
+		ctx.moveTo(xarr[index]+size/2, yarr[index]);
+		ctx.lineTo(xarr[index]+size, yarr[index]);
+		ctx.lineTo(xarr[index]+size, yarr[index]+size);
+		ctx.lineTo(xarr[index]+size/2, yarr[index]+size);
+		ctx.lineTo(xarr[index]+size/2, yarr[index]);
+		ctx.fill();
+		ctx.stroke();
+	break;
+	case "1010": //line(a.x, a.y, d.x, d.y);
+			//line(b.x, b.y, c.x, c.y);
+		ctx.beginPath();
+		ctx.moveTo(xarr[index]+size/2, yarr[index]);
+		ctx.lineTo(xarr[index]+size, yarr[index]);
+		ctx.lineTo(xarr[index]+size, yarr[index]+size/2);
+		ctx.lineTo(xarr[index]+size/2, yarr[index]+size);
+		ctx.lineTo(xarr[index], yarr[index]+size);
+		ctx.lineTo(xarr[index], yarr[index]+size/2);
+		ctx.lineTo(xarr[index]+size/2, yarr[index]);
+		ctx.fill();
+		ctx.stroke();
+	break;
+	case "1011": //line(a.x, a.y, b.x, b.y);
+		ctx.beginPath();
+		ctx.moveTo(xarr[index]+size/2, yarr[index]);
+		ctx.lineTo(xarr[index]+size, yarr[index]);
+		ctx.lineTo(xarr[index]+size, yarr[index]+size/2);
+		ctx.lineTo(xarr[index]+size/2, yarr[index]);
+		ctx.fill();
+		ctx.stroke();
+	break;
+	case "1100": //line(b.x, b.y, d.x, d.y);
+		ctx.beginPath();
+		ctx.moveTo(xarr[index], yarr[index]+size/2);
+		ctx.lineTo(xarr[index]+size, yarr[index]+size/2);
+		ctx.lineTo(xarr[index]+size, yarr[index]+size);
+		ctx.lineTo(xarr[index], yarr[index]+size);
+		ctx.lineTo(xarr[index], yarr[index]+size/2);
+		ctx.fill();
+		ctx.stroke();
+	break;
+	case "1101": //line(b.x, b.y, c.x, c.y);
+		ctx.beginPath();
+		ctx.moveTo(xarr[index]+size, yarr[index]+size/2);
+		ctx.lineTo(xarr[index]+size, yarr[index]+size);
+		ctx.lineTo(xarr[index]+size/2, yarr[index]+size);
+		ctx.lineTo(xarr[index]+size, yarr[index]+size/2);
+		ctx.fill();
+		ctx.stroke();
+	break;
+	case "1110": //line(c.x, c.y, d.x, d.y);
+			ctx.beginPath();
+			ctx.moveTo(xarr[index], yarr[index]+size/2);
+			ctx.lineTo(xarr[index]+size/2, yarr[index]+size);
+			ctx.lineTo(xarr[index], yarr[index]+size);
+			ctx.lineTo(xarr[index], yarr[index]+size/2);
+			ctx.fill();
+			ctx.stroke();
+	break;
+	case "1111":
+	break;
+	}
+	}
+
+
+
+
+else if (!rounded)
+	{
+	switch (binary)
+	{
+	case "0000":
+	break;
+	case "0001": line(c.x, c.y, d.x, d.y);
+	break;
+	case "0010": line(b.x, b.y, c.x, c.y);
+	break;
+	case "0011": line(b.x, b.y, d.x, d.y);
+	break;
+	case "0100": line(a.x, a.y, b.x, b.y); 
+	break;
+	case "0101": line(a.x, a.y, b.x, b.y);
+			line(c.x, c.y, d.x, d.y);
+	break;
+	case "0110": line(c.x, c.y, a.x, a.y);
+	break;
+	case "0111": line(a.x, a.y, d.x, d.y);
+	break;
+	case "1000": line(a.x, a.y, d.x, d.y);
+	break;
+	case "1001": line(c.x, c.y, a.x, a.y);
+	break;
+	case "1010": line(a.x, a.y, d.x, d.y);
+			line(b.x, b.y, c.x, c.y);
+	break;
+	case "1011": line(a.x, a.y, b.x, b.y);
+	break;
+	case "1100": line(b.x, b.y, d.x, d.y);
+	break;
+	case "1101": line(b.x, b.y, c.x, c.y);
+	break;
+	case "1110": line(c.x, c.y, d.x, d.y);
+	break;
+	case "1111":
+	break;
+	}
+
+	}
+
+
+
+
+
+
+};
+
+function scrollScreen()
+{
+for(var i=xarr.length-1; i>=0; i--)
+	{
+	xarr[i]-=size;
+	if(xarr[i]<0)
+		{
+		colorCircle(xarr[i], yarr[i], 5, 'green');
+		xarr[i]=(cols-1)*size
+		valarr[i]=getRand(0,1);
+		doorarr[i]=getRand(0,100);
+		
+		
+		
+
+		//
+		}
+
+
+	}
+
+
+
+
+
+
+
+
+
+
+}
+
+
+
+</script>
