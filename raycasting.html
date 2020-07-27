@@ -1,0 +1,329 @@
+<canvas id="gc" width="700" height="600"></canvas>
+<script>
+window.onload=function() {
+
+
+	canv=document.getElementById("gc");
+	ctx=canv.getContext("2d");
+	canv.addEventListener('mousemove', function(evt){ var mousePos=calculateMousePos(evt);
+								mouseX=mousePos.x;
+								mouseY=mousePos.y;
+							});
+
+	document.addEventListener("keydown", keyPush);
+
+
+	setInterval(function() {
+				
+				draw();
+				},
+				1000/30);
+	
+}
+
+
+
+
+
+var canv;
+var ctx;
+
+class smile{
+	constructor(x,y, insize){
+	this.size = insize;
+	//this.color=color;
+	this.vel=[0,0];
+	this.x=x;
+	this.y=y;
+	this.infected=[];
+	this.emotion=true;
+	this.sel=false;
+	this.healer=false;
+	//this.col=randomcolor();
+	this.col=[255,255,0];
+	this.startx=x;
+	this.starty=y;
+		}
+
+move()
+	{
+	this.x+=this.vel[0];
+	this.y+=this.vel[1];
+	}
+}
+
+
+class boundary{
+	constructor(x1in, y1in, x2in, y2in){
+	this.x1=x1in;
+	this.y1=y1in;
+	this.x2=x2in;
+	this.y2=y2in;
+	this.strength=10;
+	this.door=getRand(0,100);
+	}
+show()
+	{
+
+	ctx.strokeStyle='skyblue';
+	ctx.fillStyle='black';
+	line(this.x1, this.y1, this.x2, this.y2);
+
+	}
+
+
+
+}
+
+
+
+
+
+var keyPush = function(evt){
+switch(evt.keyCode)
+	{
+}
+	
+};
+
+
+//Function for drawing lines
+
+var line = function (x1, y1, x2, y2)
+{
+ctx.beginPath();
+ctx.moveTo(x1,y1);
+ctx.lineTo(x2,y2);
+ctx.stroke();
+
+
+}
+
+
+var runonce=true; 	// Flag used for a "setup" function
+var walls=[];
+var face;
+
+
+function draw(){
+	
+	if(runonce)
+		{
+		walls.push(new boundary(100,100, 100, 400));
+		walls.push(new boundary(100,400, 400, 400));
+		walls.push(new boundary(400,400, 400, 100));
+		walls.push(new boundary(400,100, 100, 100));
+		walls.push(new boundary(500,100, 500, 400));
+		face=new smile(200, 250, 30);
+		runonce=false;
+		}
+colorRect(0,0, canv.width, canv.height, 'blue');
+for(var i=0; i<walls.length; i++)
+	{
+	walls[i].show();
+	}
+//drawFace(inx,iny,insize, inhappy,insel, incol
+cast();
+drawFace(face.x, face.y, face.size, true, false, face.col);
+face.x=mouseX;
+face.y=mouseY;
+
+}
+
+function keyPush(evt) {
+
+
+
+
+}
+
+function colorRect(leftX, TopY, width, height, drawColor)
+{
+	
+	ctx.fillStyle= drawColor;
+	ctx.strokeRect(leftX, TopY, width, height);
+	ctx.fillRect(leftX, TopY, width, height);
+	
+}
+
+
+
+function colorCircle(centerX, centerY, radius, ballColor)
+{
+	ctx.fillStyle=ballColor;
+	ctx.beginPath();
+	ctx.arc(centerX, centerY, radius, 0, Math.PI*2, true);
+	ctx.fill();
+
+}
+
+function drawCircle(centerX, centerY, radius, ballColor)
+{
+	ctx.strokelStyle=ballColor;
+	ctx.beginPath();
+	ctx.arc(centerX, centerY, radius, 0, Math.PI*2, true);
+	ctx.stroke();
+
+}
+
+function rgb(r, g, b){
+  return "rgb("+r+","+g+","+b+")";
+}
+
+function getRand(min, max) {
+  return (Math.random() * (max - min) + min);
+}
+
+function drawFace(inx,iny,insize, inhappy,insel, incol)
+	{
+	//console.log("HERE");
+	let size=insize;
+	let x=inx;
+	let y=iny;
+	let happy=inhappy;
+	let sel=insel;
+	let col=incol;
+	if(sel)
+		{
+		colorCircle(x,y, size, 'green');
+		}
+	else if(happy)
+		{
+		//col=randomcolor();
+		colorCircle(x, y, size, rgb(col[0], col[1], col[2]) );
+		}
+	else
+		{
+		colorCircle(x, y, size, 'red');
+		}
+	if((sel) && (!happy))
+		{
+		colorCircle(x, y, size, 'blue')
+
+		}
+	drawCircle(x, y, size, 'black');
+	colorCircle(x-size/3, y-size/3, size/6, 'black');
+	colorCircle(x+size/3, y-size/3, size/6, 'black');
+
+
+	ctx.beginPath();
+	if(happy)
+		{
+	ctx.arc(x, y+size/4, size/2, Math.PI, 0, true);
+		}
+	else
+		{
+	ctx.arc(x, y+size/2, size/2, 0, Math.PI, true);
+		}
+	ctx.fill();
+
+	}
+
+function calculateMousePos(evt){
+	var rect= canv.getBoundingClientRect();
+	var root= document.documentElement;
+	var mouseX = evt.clientX - rect.left - root.scrollLeft;
+	var mouseY = evt.clientY - rect.top - root.scrollTop	
+	return{
+	x: mouseX, 
+	y: mouseY
+	}
+	};
+
+
+
+
+function cast()
+{
+var rays=90;
+var view=face.size*4;
+var coord=[];
+var rayx=[];
+var rayy=[];
+var x1=face.x;		// X value of start of ray (Center of face)
+var y1=face.y;		// Y Value of start of ray (Center of face)
+var x2;			// X Value of End of array (view distance away @ angle)
+var y2;			// Y Value of End of array (view distance away @ angle)
+var x3;			// X Value of Start of Boundary Line
+var y3;			// Y Value of Start of Boundary Line
+var x4;			// X Value of End of Boundary Line
+var y4;			// Y Value of End of Boundary Line
+var den;		// Denomitator of Line Line Intersection formula
+var t;			// Used to determine if lines intersect
+var u;			// Used to determine if lines intersect
+
+
+
+for(var i=0; i<rays; i++)
+	{
+	rayx.push(view * (Math.cos(i*(360/rays) * Math.PI/180)) + x1);
+	rayy.push(view * (Math.sin(i*(360/rays) * Math.PI/180)) + y1);
+	}
+for(var i=0; i<rayx.length; i++)
+	{
+	x2= rayx[i];
+	y2= rayy[i];
+	//x2=mouseX;
+	//y2=mouseY;
+	for(var j=0; j<walls.length; j++)
+		{
+		x3=walls[j].x1;
+		y3=walls[j].y1;
+		x4=walls[j].x2;
+		y4=walls[j].y2;
+		den=((x1-x2)*(y3-y4))-((y1-y2)*(x3-x4));
+			if(den==0)
+				{
+				//coord[0]=-1;
+				//coord[1]=-1;
+				
+				}
+			else
+				{
+				t=(((x1-x3)*(y3-y4))-((y1-y3)*(x3-x4)))/den;
+				u=(((x1-x2)*(y1-y3))-((y1-y2)*(x1-x3)))/den;
+					if(t<1 && t>0 )
+						{
+						rayx[i]=x1+t*(x2-x1);
+						rayy[i]=y1+t*(y2-y1);
+						
+						ctx.strokeStyle='skyblue';
+						line(x1, y1, rayx[i], rayy[i]);
+						colorCircle(rayx[i], rayy[i], 3, 'green');
+
+						}
+					else
+						{
+						//ctx.strokeStyle='red';
+						//line(x1, y1, x2, y2);
+						
+
+						}
+					
+				
+				}
+
+
+
+
+
+		}
+
+
+
+
+
+
+
+
+	
+	}
+
+
+
+
+}
+
+
+
+</script>
