@@ -10,3 +10,5 @@ Press Down: Scale the grid smaller (regenerates a new map, does not "zoom in" on
 
 
 Sample gif: https://i.imgur.com/oS4Yxt0.gif
+
+TODO: Automate the face's movements based off of the readings from the raycasting. Have him roam around the map aimlessly, without bumping into walls. 
