@@ -1,0 +1,553 @@
+<canvas id="gc" width="1350" height="600"></canvas>
+<script>
+window.onload=function() {
+
+
+	canv=document.getElementById("gc");
+	ctx=canv.getContext("2d");
+	canv.addEventListener("click", function(){
+ 		 calcClick();
+			});
+	canv.addEventListener('mousemove', function(evt){ var mousePos=calculateMousePos(evt);
+								mouseX=mousePos.x;
+								mouseY=mousePos.y;
+							});
+
+	document.addEventListener("keydown", keyPush);
+
+
+	setInterval(function() {
+				
+				draw();
+				},
+				1000/5);
+	
+}
+
+
+
+
+
+var canv;
+var ctx;
+
+
+
+
+
+
+
+
+
+
+var keyPush = function(evt){
+
+//console.log(evt.keyCode);
+switch(evt.keyCode)
+	{
+case 32: update=!update;
+break;
+
+case 67: darkmode=!darkmode;
+break;
+
+
+
+
+}
+	
+};
+
+// Cell class that will track whether I am alive and how many current alive neighbors I have
+class cell{
+	constructor(x,y){
+	this.x = x;
+	this.y = y;
+	this.size = size;
+	this.nbors = 0;
+	this.alive = false;
+		}
+
+
+	show(){
+	
+	if(this.alive)
+		{
+		if(darkmode)
+			{
+		col = 'white';
+			}
+		else
+			{
+		col = 'black';
+			}
+		}
+	else
+		{
+		if(darkmode)
+			{
+		col = 'black';
+			}
+		else
+			{
+		col = 'white';
+			}
+		}
+
+	colorRect(this.x, this.y, this.size, this.size, col);
+
+	}
+
+	}
+
+
+
+
+//Function for drawing lines
+
+var line = function (x1, y1, x2, y2)
+{
+ctx.beginPath();
+ctx.moveTo(x1,y1);
+ctx.lineTo(x2,y2);
+ctx.stroke();
+
+
+}
+
+// Any live cell with fewer than two live neighbours dies, as if by underpopulation.
+// Any live cell with two or three live neighbours lives on to the next generation.
+// Any live cell with more than three live neighbours dies, as if by overpopulation.
+// Any dead cell with exactly three live neighbours becomes a live cell, as if by reproduction.
+
+var runonce=true;	// Flag used for setup
+var cellarr=[];		// Array of cell class
+var nextstate=[];	// Stores the next state of the array based off current neighbors
+var rows;
+var cols;
+var size=15;
+var update=true;	// Flag used to pause the iterations so we can make custom patterns
+var darkmode=false;	// Flag to toggle colors
+
+
+
+
+
+function draw(){
+	
+	if(runonce)
+		{
+		rows=canv.height/size;
+		cols=canv.width/size;
+		col='green';
+		// Initialize array off cells 
+			for(var i=0; i<rows; i++)
+				{
+				for (var j=0; j<cols; j++)
+					{
+					cellarr.push(new cell(j*size, i*size));
+					if(cellarr.length%6e4==0)
+						{
+						//cellarr[cellarr.length-1].alive=true;
+						}
+					if(getRand(0,100) > 97) // Sets 30% of the cells to alive 
+						{
+					cellarr[cellarr.length-1].alive=true;
+						}
+					}
+				
+				}
+		
+
+		runonce=false;
+		}
+
+	colorRect(0,0, canv.width, canv.height,'skyblue');	// Shouldn't really see this background
+
+
+	// Draw all cells white if allive, black if dead
+		for(var i=0; i< cellarr.length; i++)
+			{
+			cellarr[i].show();
+			}
+	
+	
+	// Any live cell with fewer than two live neighbours dies, as if by underpopulation.
+	// Any live cell with two or three live neighbours lives on to the next generation.
+	// Any live cell with more than three live neighbours dies, as if by overpopulation.
+	// Any dead cell with exactly three live neighbours becomes a live cell, as if by reproduction.
+	
+	// After drawing all of the cells, we will determine their state for the next iteration
+	// WE WILL ONLY DO THIS IF NOT PAUSED
+if(update)
+{
+	for(var i=0; i<cellarr.length; i++)
+		{
+		var nborct= countNeighbors(i);
+		if(cellarr[i].alive)
+			{
+				if(nborct<2)
+					{
+				nextstate[i]=false;
+					}
+				else if((nborct==2) || (nborct==3))
+					{
+				nextstate[i]=true;
+					}
+				else if(nborct>3)
+					{
+				nextstate[i]=false;
+					}
+			}
+		else if (!cellarr[i].alive)
+			{
+				if((nborct<3) || (nborct>3))
+					{
+					nextstate[i]=false;
+					}
+				else if(nborct==3)
+					{
+					nextstate[i]=true;
+					}
+			}
+			
+		}
+
+	// After we have displayed the grid, and calculated the nextstate based on current state, we need to go through the cells and set their next states before displaying again
+
+	for(var i=0; i<cellarr.length; i++)
+		{
+		cellarr[i].alive=nextstate[i];
+
+		}
+}
+	
+	
+}
+
+
+
+
+
+
+function keyPush(evt) {
+
+
+
+
+}
+
+function colorRect(leftX, TopY, width, height, drawColor)
+{
+	
+	ctx.fillStyle= drawColor;
+	ctx.strokeRect(leftX, TopY, width, height);
+	ctx.fillRect(leftX, TopY, width, height);
+	
+}
+
+
+
+function colorCircle(centerX, centerY, radius, ballColor)
+{
+	ctx.fillStyle=ballColor;
+	ctx.beginPath();
+	ctx.arc(centerX, centerY, radius, 0, Math.PI*2, true);
+	ctx.fill();
+
+
+}
+
+
+function drawCircle(centerX, centerY, radius, ballColor)
+{
+	ctx.strokeStyle=ballColor;
+	ctx.beginPath();
+	ctx.arc(centerX, centerY, radius, 0, Math.PI*2, true);
+	ctx.stroke();
+
+
+}
+
+
+function getRand(min, max) {
+  return Math.round((Math.random() * (max - min) + min));
+}
+
+
+function calculateMousePos(evt){
+	var rect= canv.getBoundingClientRect();
+	var root= document.documentElement;
+	var mouseX = evt.clientX - rect.left - root.scrollLeft;
+	var mouseY = evt.clientY - rect.top - root.scrollTop	
+	return{
+	x: mouseX, 
+	y: mouseY
+	}
+	};
+
+function calcClick()	// This function lets us convert our mousclick into a toggle for that cell
+{
+let r;
+let c;
+r=Math.floor(mouseX/(canv.width/cols));
+c=Math.floor(mouseY/(canv.height/rows));
+ind=index(r,c);
+
+//console.log(r,c);
+
+countNeighbors(index(r,c));
+
+
+
+cellarr[index(r,c)].alive=!cellarr[index(r,c)].alive
+}
+
+
+
+
+function index(r, c) // Given Row and collumn notation, returns array index for that position
+	{
+	return r+(c*cols);
+	}
+
+
+function revindex(index) // Given an array index, returns the row, column of that spot
+	{
+	var coord=[];
+	coord[0]=index%(cols);
+	coord[1]=(index-coord[0])/cols;
+	return coord;
+	}
+
+// Counts how many live neighbors are in the 8 surrounding squares
+
+function countNeighbors(ind)
+{
+var count=0;	// Count of how many neighbors are alive
+var r;		// Row of index in
+var c;		// Column of index in
+var rc=[];	// Stores return value of index to coord
+
+rc=revindex(ind);
+r= rc[0];
+c= rc[1];
+
+//console.log(r,c)
+if((r>0) && (r<cols-1) && (c>0) && (c<rows-1)) // For all NON-Edge Cases
+	{
+	if(cellarr[index(r-1,c-1)].alive)
+		{
+		count++
+		}
+	if(cellarr[index(r,c-1)].alive)
+		{
+		count++
+		}
+	if(cellarr[index(r+1,c-1)].alive)
+		{
+		count++
+		}
+	if(cellarr[index(r-1,c)].alive)
+		{
+		count++
+		}
+	if(cellarr[index(r+1,c)].alive)
+		{
+		count++
+		}
+	if(cellarr[index(r-1,c+1)].alive)
+		{
+		count++
+		}
+	if(cellarr[index(r,c+1)].alive)
+		{
+		count++
+		}
+	if(cellarr[index(r+1,c+1)].alive)
+		{
+		count++
+		}
+
+	}
+else if((r==0) && (c>0) && (c<rows-1))
+	{
+	//console.log("LEFT");
+	if(cellarr[index(r,c-1)].alive)
+		{
+		count++
+		}
+	if(cellarr[index(r+1,c-1)].alive)
+		{
+		count++
+		}
+	if(cellarr[index(r+1,c)].alive)
+		{
+		count++
+		}
+	if(cellarr[index(r,c+1)].alive)
+		{
+		count++
+		}
+	if(cellarr[index(r+1,c+1)].alive)
+		{
+		count++
+		}
+	}
+else if((r==cols-1) && (c>0) && (c<rows-1))
+	{
+	//console.log("RIGHT");
+	if(cellarr[index(r,c-1)].alive)
+		{
+		count++
+		}
+	if(cellarr[index(r-1,c-1)].alive)
+		{
+		count++
+		}
+	if(cellarr[index(r-1,c)].alive)
+		{
+		count++
+		}
+	if(cellarr[index(r,c+1)].alive)
+		{
+		count++
+		}
+	if(cellarr[index(r-1,c+1)].alive)
+		{
+		count++
+		}
+	}
+else if ((r>0) && (r<cols-1) && (c==0))
+	{
+	//console.log("TOP");
+	if(cellarr[index(r-1,c)].alive)
+		{
+		count++
+		}
+	if(cellarr[index(r-1,c+1)].alive)
+		{
+		count++
+		}
+	if(cellarr[index(r,c+1)].alive)
+		{
+		count++
+		}
+	if(cellarr[index(r+1,c+1)].alive)
+		{
+		count++
+		}
+	if(cellarr[index(r+1,c)].alive)
+		{
+		count++
+		}
+	}
+else if ((r>0) && (r<cols-1) && (c==rows-1))
+	{
+	//console.log("BOTTOM");
+	if(cellarr[index(r-1,c)].alive)
+		{
+		count++
+		}
+	if(cellarr[index(r+1,c)].alive)
+		{
+		count++
+		}
+	if(cellarr[index(r-1,c-1)].alive)
+		{
+		count++
+		}
+	if(cellarr[index(r,c-1)].alive)
+		{
+		count++
+		}
+	if(cellarr[index(r+1,c-1)].alive)
+		{
+		count++
+		}
+	}
+else if((r==0) && (c==0))
+	{
+	//console.log("TOP LEFT");
+	if(cellarr[index(r+1,c)].alive)
+		{
+		count++
+		}
+	if(cellarr[index(r+1,c+1)].alive)
+		{
+		count++
+		}
+	if(cellarr[index(r,c+1)].alive)
+		{
+		count++
+		}	
+	}
+else if((r==cols-1) && c==0)
+	{
+	//console.log("TOP RIGHT");	
+	if(cellarr[index(r-1,c)].alive)
+		{
+		count++
+		}
+	if(cellarr[index(r-1,c+1)].alive)
+		{
+		count++
+		}
+	if(cellarr[index(r,c+1)].alive)
+		{
+		count++
+		}
+	}
+else if((r==0) && (c==rows-1))
+	{
+	//console.log("BOTTOM LEFT");
+	if(cellarr[index(r,c-1)].alive)
+		{
+		count++
+		}
+	if(cellarr[index(r+1,c-1)].alive)
+		{
+		count++
+		}
+	if(cellarr[index(r+1,c)].alive)
+		{
+		count++
+		}
+	}
+else if ((r==cols-1) && (c==rows-1))
+	{
+	//console.log("BOTTOM RIGHT");
+	if(cellarr[index(r-1,c)].alive)
+		{
+		count++
+		}
+	if(cellarr[index(r-1,c-1)].alive)
+		{
+		count++
+		}
+	if(cellarr[index(r,c-1)].alive)
+		{
+		count++
+		}
+
+	}
+	
+
+
+
+
+	
+
+
+
+
+//console.log(count);
+return count;
+}
+
+
+</script>
+<br>
+Press Space to pause./ 
+Click where you want to activate or deactivate cells./
+C to swap color scheme.
