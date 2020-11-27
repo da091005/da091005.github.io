@@ -5,3 +5,6 @@ THIS IS A GAME OF LIFE CODED IN JAVASCRIPT WITH FEW EXTRA "FRILLS"
 3) Click to swap cell's state
 4) Press 1-4 to create glider at mouse position 
 
+
+
+Sample gif: https://imgur.com/gallery/UpE8SUQ
