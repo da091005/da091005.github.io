@@ -335,6 +335,8 @@ function draw(){
 			}
 
 		// Select a white dot for the smile to go on. 
+			
+	
 		do{
 		var rnd= getRand(0, valarr.length);
 		if((valarr[rnd] == 0) && (yarr[rnd] !=0) && (yarr[rnd]<(rows-2)*size) && (xarr[rnd]!=0) && (xarr[rnd]<(cols-2)*size))
@@ -385,10 +387,10 @@ function draw(){
 		}
 		if(found)
 	{
-	face.raycast();
-	drawFace(face.x, face.y, face.size, face.emotion, face.sel, face.col);	
-	face.x=mouseX;
-	face.y=mouseY;
+	//face.raycast();
+	//drawFace(face.x, face.y, face.size, face.emotion, face.sel, face.col);	
+	//face.x=mouseX;
+	//face.y=mouseY;
 	}
 	if(scroll)
 			{
