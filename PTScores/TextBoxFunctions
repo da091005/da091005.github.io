@@ -1,0 +1,73 @@
+
+
+
+
+// If Slider is used, sets the pushup txt boxes to slider value
+function pushChange()
+{
+pushtxt.value(pushups.value()); 
+}
+
+// If Slider is used, sets the situp txt boxes to slider value
+function sitChange()
+{
+sittxt.value(situps.value()); 
+}
+
+// If Slider is used, sets the runtime txt boxes to slider value
+function runChange() 
+{
+var tm= runTime(runtime.value());
+runmintxt.value(tm.minutes);
+runsectxt.value(nf(tm.sec,2)); 
+}
+
+// If submit button is clicked, use the values manually input from textboxes
+function calcButton()
+{
+var validPush = int (pushtxt.value());
+var validSit = int (sittxt.value());
+var validMin = int (runmintxt.value());
+var validSec = int (runsectxt.value());
+
+// Validate textbox inputs
+// Once validated, if they are > max, set the sliders to max
+// this will automatically calculate the score. 
+// I think I'm pretty clever for coming up with this
+// It minimized the amount of code I have to paste into 
+// each score program. 
+if(!isNaN(validPush) && !isNaN(validSit) && !isNaN(validMin) && !isNaN(validSec))
+{
+if(validPush>pushmax)
+{
+validPush=pushmax;  
+}
+
+if(validSit>sitmax)
+{
+validSit=sitmax;  
+}
+
+  var mins=validMin;
+  var secs=validSec;
+  var runsecs=(mins*60) + secs;
+  
+if(runsecs > runmax)
+{
+runsecs=runmax; 
+}
+else if(runsecs < runmin)
+{
+runsecs = runmin;  
+}
+  
+pushups.value(validPush);
+situps.value(validSit);
+runtime.value(runsecs);
+}
+else
+{
+alert("Please verify that only numbers are input for times!");
+}
+  
+}
