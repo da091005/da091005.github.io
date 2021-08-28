@@ -1,0 +1,6 @@
+ background('skyblue');
+  text(":", 329, 86);
+  lapCalc();
+  
+  textSize(20);
+  pushnum=pushups.value();
