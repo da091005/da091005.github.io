@@ -1,0 +1,13 @@
+  laptxt=createInput();
+  laptxt.position(300, 190);
+  laptxt.size(25,15);
+  laptxt.value(reqLaps);
+  lapinc=createButton("+");
+  lapinc.size(30,30);
+  lapinc.position(350,185)
+  lapinc.mousePressed(lapPlus);
+  
+  lapdec=createButton("-");
+  lapdec.size(30,30);
+  lapdec.position(250,185)
+  lapdec.mousePressed(lapMinus);
