@@ -1,0 +1,83 @@
+function lapCalc()
+{
+  var nl;
+  var lp;
+if(runonce)
+  {
+  // lapTime=runTime(floor(runtime.value()/reqLaps));
+  // ptrs.push(createP("Req'd Lap Time: ~" + lapTime.minutes +":" + nf(lapTime.sec,2), width/2, 200));
+  // ptrs.push(createP("(Rounded down to nearest sec)", width/2, 220));
+
+  // If reqLap is a whole number, process it one way. 
+  
+  var rnd=floor(reqLaps);
+  if(rnd==reqLaps)
+  {
+  lapTime=runTime(floor(runtime.value()/reqLaps));
+  ptrs.push(createP("Req'd Lap Time: ~" + lapTime.minutes +":" + nf(lapTime.sec,2), width/2, 200));
+  ptrs.push(createP("(Rounded down to nearest sec)", width/2, 220));  
+    
+    
+    
+  for(var i=0; i<reqLaps; i++)
+  {
+  lp=floor(runtime.value()/reqLaps)  // num secs per lap
+  nl=runTime(lp*(i+1));      // Next lap 
+    ptrs.push(createP("Lap " + int(i+1) + ": ≤ " + nl.minutes  +":" +nf(nl.sec,2)));
+    //ptrs[ptrs.length-1].attribute(line-height, 1);
+  }
+  }
+  // If laps is a half number handle it another way. 
+  else
+  {
+  lapTime=runTime((runtime.value()/((reqLaps*2)))*2);
+  ptrs.push(createP("Req'd Lap Time: ~" + lapTime.minutes +":" + nf(floor(lapTime.sec),2), width/2, 200));
+  ptrs.push(createP("(Rounded down to nearest sec)", width/2, 220));  
+    
+    
+   for(var i=0; i<ceil(reqLaps); i++)
+  {
+    
+    lp=((runtime.value()/((reqLaps*2)))*2)  // num secs per lap
+   nl=runTime(lp*(i+1));      // Next lap 
+    if(i<ceil(reqLaps-1))
+       {
+    ptrs.push(createP("Lap " + int(i+1) + ": ≤ " + nl.minutes  +":" +nf(floor(nl.sec),2)));
+      }
+    else
+    {
+      nl=runTime(lp*reqLaps);
+     ptrs.push(createP("LAP " + (i+0.5) + ": ≤ " + nl.minutes  +":" +nf(floor(nl.sec),2)));
+    }    
+  }
+  }
+  runonce=false;  
+  }
+}
+
+
+function lapPlus()
+{
+reqLaps+=0.5;  
+lapCalc();
+runonce=true;
+  for(var i=0; i<ptrs.length; i++)
+{
+ptrs[i].remove();   
+}
+laptxt.value(reqLaps);
+}
+
+function lapMinus()
+{
+reqLaps-=0.5;
+laptxt.value(reqLaps);
+runonce=true;
+  for(var i=0; i<ptrs.length; i++)
+{
+ptrs[i].remove();   
+}
+lapCalc();
+}
+
+
