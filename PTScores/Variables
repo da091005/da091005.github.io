@@ -1,0 +1,6 @@
+var laptxt;                 // Text box for numlaps
+var lapinc;                 // Button for increasing
+var lapdec;                 // Button for decreasing
+var ptrs=[];                // Array of DOM pointers? 
+var runonce = true;         // Flag used for showing lap times only once
+var reqLaps=6;              // Number of laps for 1.5 miles
