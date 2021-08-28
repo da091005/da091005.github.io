@@ -4,3 +4,6 @@
   
   textSize(20);
   pushnum=pushups.value();
+
+
+  text("Required Laps", 250, 240);
