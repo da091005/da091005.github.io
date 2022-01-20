@@ -1,0 +1,550 @@
+<canvas id="gc" width="800" height="700"></canvas>
+<script>
+window.onload=function() {
+
+
+	canv=document.getElementById("gc");
+	ctx=canv.getContext("2d");
+	canv.addEventListener('mousemove', function(evt){var mousePos= calculateMousePos(evt);
+							
+							mouseX=mousePos.x;
+							mouseY=mousePos.y;
+							//console.log(mousePos);
+							});
+
+	document.addEventListener("keydown", keyPush);
+
+
+	setInterval(function() {
+				
+				draw();
+				},
+				1000/60);
+	
+}
+
+
+
+
+
+var canv;
+var ctx;
+
+
+
+
+
+function calculateMousePos(evt){
+	var rect= canv.getBoundingClientRect();
+	var root= document.documentElement;
+	var mouseX = evt.clientX - rect.left - root.scrollLeft;
+	var mouseY = evt.clientY - rect.top - root.scrollTop	
+	return{
+	x: mouseX, 
+	y: mouseY
+	}
+	};
+
+
+
+
+
+function checkClick(mouseX, mouseY)
+{
+//console.log('clicked: ' + mouseX + " " + mouseY);
+xmitpos[0]=mouseX;
+xmitpos[1]=mouseY;
+xmitr=0;
+console.log(" ");
+for(var i=0; i<3; i++)
+{
+hit[i]=false;
+count[i]=0;
+timing=0;
+
+}
+predicted=false;
+
+
+
+};
+
+
+var keyPush = function(evt){
+//console.log(evt.keyCode); 
+switch(evt.keyCode)
+	{
+case 32:resetBackground();
+break;
+case 49: newPoint=true;
+rcvx[0]=mouseX;
+rcvy[0]=mouseY;
+break;
+
+case 50: newPoint=true;
+rcvx[1]=mouseX;
+rcvy[1]=mouseY;
+break
+case 51: newPoint=true;
+rcvx[2]=mouseX;
+rcvy[2]=mouseY;
+break;
+
+
+}
+	
+};
+
+
+//Function for drawing lines
+
+var line = function (x1, y1, x2, y2)
+{
+ctx.beginPath();
+ctx.moveTo(x1,y1);
+ctx.lineTo(x2,y2);
+ctx.stroke();
+
+
+}
+
+
+var mouseX;
+var mouseY;
+var xmitpos=[];
+var xmitarrx=[];
+var xmitarry=[];
+var prevx=[];
+var prevy=[];
+var newPoint=false;
+var count=[];
+var timing=0;
+
+var backx=[];
+var xmitr=0;
+var limitr;
+var setup=true;
+var higher;		// stores the higher number either width or height\
+var rcvx=[];
+var rcvy=[];
+var hit=[];
+var col='skyblue';
+//var predicted=false;
+
+
+function draw(){
+	if(setup)
+	{
+	for(var i=0; i<3; i++)
+		{
+		rcvx[i]=getRand(0, canv.width);
+		rcvy[i]=getRand(0, canv.height);
+		count[i]=0;
+		
+		//rcvx[0]=canv.width/2;
+		//rcvy[0]=0;
+		//rcvx[1]=0;
+		//rcvy[1]=canv.height/2;
+		//rcvx[2]=canv.width;
+		//rcvy[2]=canv.height/2;
+
+		//xmitpos[0]=canv.width/2;
+		//xmitpos[1]=canv.height/2;
+
+		hit[i]=false;
+		}
+
+	
+	for(var i=0; i<canv.width; i+=1)
+		{
+		for (var j=0; j<canv.height; j+=1)
+			{
+			switch(returnOrder(i,j))
+				{
+			case 123: col='red';
+			break;
+			case 132: col='darkred';
+			break;
+			case 213: col='blue';
+			break;
+			case 231: col='darkblue';
+			break;
+			case 312: col='green';
+			break;
+			case 321: col='darkgreen';
+			break;
+			case 111: col='white';
+			//console.log("EQUAL");	
+			break;	
+
+
+				};
+
+
+
+
+			colorCircle(i,j,1, col);
+			backx[returnIndex(i,j)]=col;
+		
+			}
+
+		}
+
+
+		
+
+	if (canv.width>canv.height)
+		{
+		higher=canv.width;
+		}
+	else
+		{
+		higher=canv.height;
+		}
+	
+	limitr=getDistance(0, 0, higher, higher);
+	ctx.save();	
+	setup=false;
+	}	
+
+	if(newPoint)
+		{
+
+		for(var i=0; i<canv.width; i+=1)
+		{
+		for (var j=0; j<canv.height; j+=1)
+			{
+			switch(returnOrder(i,j))
+				{
+			case 123: col='red';
+			break;
+			case 132: col='darkred';
+			break;
+			case 213: col='blue';
+			break;
+			case 231: col='darkblue';
+			break;
+			case 312: col='green';
+			break;
+			case 321: col='darkgreen';
+			break;
+			case 111: col='white';
+			//console.log("EQUAL");	
+			break;	
+
+
+				};
+
+
+
+
+			colorCircle(i,j,1, col);
+			backx[returnIndex(i,j)]=col;
+		
+			}
+
+		}
+
+		newPoint=false;
+		}
+	
+
+	
+		
+
+
+
+
+
+
+	canv.onclick=function(){checkClick(mouseX, mouseY);};		// Constantly waiting for clicks
+
+	//colorRect(0,0, canv.width, canv.height,'skyblue');
+	ctx.restore();
+
+
+	
+
+
+	
+
+	for(var i=0; i<3; i++)
+		{
+	if(i==0)
+		{
+		col='red';
+		}
+	else if(i==1)
+		{
+		col='blue';
+		}	
+	else if(i==2)
+		{
+		col='green';
+		}
+
+	colorCircle(rcvx[i], rcvy[i], 5, 'black');
+	colorCircle(rcvx[i], rcvy[i], 4, col);
+	
+
+		}
+	if(xmitr<limitr)
+		{
+		xmitr++;
+		//ctx.lineWidth=4;
+
+
+
+prevx=xmitarrx;
+	prevy=xmitarry;
+	
+
+	for(var i=0; i<360; i++)
+		{
+		//var ind=returnIndex(Math.floor(prevx[i]), Math.floor(prevy[i]));
+		//colorCircle(prevx[i], prevy[i], 1, backx[ind]);
+		var ind=returnIndex(Math.round(xmitarrx[i]), Math.round(xmitarry[i]));
+		colorCircle(xmitarrx[i], xmitarry[i], 2, backx[ind]);
+
+
+
+		}
+
+
+	for(var i=0; i<360; i++)
+		{
+		xmitarrx[i]=xmitr * Math.cos(i*180/Math.PI)+ xmitpos[0];
+		xmitarry[i]=xmitr * Math.sin(i*180/Math.PI) + xmitpos[1];	
+		
+		colorCircle(xmitarrx[i], xmitarry[i], 1, 'black');
+		//drawCircle(xmitpos[0], xmitpos[1], xmitr, 'black');
+		}
+
+	
+
+
+
+
+
+
+
+
+	for (var i=0; i<360; i++)
+	{
+	if((getDistance(xmitarrx[i], xmitarry[i], rcvx[0], rcvy[0]) < 10) && (hit[0]==false))
+		{
+		count[0]=timing;
+		console.log("1 HIT Count: " + count[0]);
+		hit[0]=true;
+		
+		}
+	if((getDistance(xmitarrx[i], xmitarry[i], rcvx[1], rcvy[1]) < 10) && (hit[1]==false))
+		{
+		count[1]=timing;
+		console.log("2 HIT count: " + count[1]);
+		hit[1]=true;
+		
+		}
+
+	if((getDistance(xmitarrx[i], xmitarry[i], rcvx[2], rcvy[2]) < 10) && (hit[2]==false))
+		{
+		count[2]=timing;
+		console.log("3 HIT Count: " + count[2]);
+		hit[2]=true;
+		
+		}
+	
+
+
+	}
+
+	if((hit[0]) || (hit[1]) || (hit[2]))
+		{
+		if((!hit[0]) || (!hit[1]) || (!hit[2]))
+			{
+			timing++;
+			}
+		//console.log("HERE");	
+		
+		}
+
+
+
+
+
+
+		}
+
+
+
+	
+	}
+
+
+
+
+
+
+function keyPush(evt) {
+
+
+
+
+}
+
+function colorRect(leftX, TopY, width, height, drawColor)
+{
+	
+	ctx.fillStyle= drawColor;
+	ctx.strokeRect(leftX, TopY, width, height);
+	ctx.fillRect(leftX, TopY, width, height);
+	
+}
+
+
+
+function colorCircle(centerX, centerY, radius, ballColor)
+{
+	ctx.fillStyle=ballColor;
+	ctx.beginPath();
+	ctx.arc(centerX, centerY, radius, 0, Math.PI*2, true);
+	ctx.fill();
+
+
+}
+
+
+
+function drawCircle(centerX, centerY, radius, ballColor)
+{
+	ctx.fillStyle=ballColor;
+	ctx.beginPath();
+	ctx.arc(centerX, centerY, radius, 0, Math.PI*2, true);
+	//ctx.fill();
+	ctx.stroke();
+
+}
+
+
+function getDistance(x1, y1, x2, y2)
+{
+
+var dist;
+
+
+let a=(x2-x1)*(x2-x1);
+let b=(y2-y1)*(y2-y1);
+
+
+dist=Math.sqrt(b+a);
+
+
+return dist;
+}
+
+function getRand(min, max) {
+  return Math.random() * (max - min) + min;
+}
+
+
+function returnIndex(x,y)
+{
+var index=x*canv.width+y;
+
+return index;
+}
+
+function returnOrder(x,y)
+{
+var order;
+var rcv1=getDistance(x,y, rcvx[0], rcvy[0]);
+var rcv2=getDistance(x,y, rcvx[1], rcvy[1]);
+var rcv3=getDistance(x,y, rcvx[2], rcvy[2]);
+
+
+
+
+
+// 1<2<3
+// 1<3<2
+// 2<1<3
+// 2<3<1
+// 3<1<2
+// 3<2<1
+if((rcv1<rcv2) && (rcv2<rcv3))
+	{
+	order=123;
+	}
+else if((rcv1<rcv3) && (rcv3<rcv2))
+	{
+	order=132;
+	}
+else if((rcv2<rcv1) && (rcv1<rcv3))
+	{
+	order=213
+	}
+else if((rcv2<rcv3) && (rcv3<rcv1))
+	{
+	order=231;
+	}
+else if((rcv3<rcv1) && (rcv1<rcv2))
+	{
+	order=312;
+	}
+else if((rcv3<rcv2) && (rcv2<rcv1))
+	{
+	order=321;
+	}
+else if((rcv1==rcv2)&&(rcv2==rcv3))
+	{
+	order =111;
+	}
+
+
+return order;
+}
+
+
+
+function resetBackground()
+{
+console.log("RESET");
+for(var i=0; i<canv.width; i+=1)
+		{
+		for (var j=0; j<canv.height; j+=1)
+			{
+			colorCircle(i,j,1, backx[returnIndex(i,j)]);
+			};
+
+
+
+
+			//colorCircle(i,j,1, col);
+			//backx[returnIndex(i,j)]=col;
+		
+			}
+
+
+
+
+
+
+
+
+
+
+
+}
+
+
+
+</script>
+<BR>
+RED = RED BLUE GREEN
+* DARK RED = RED GREEN BLUE
+<BR>
+BLUE = BLUE RED GREEN
+* DARK BLUE = BLUE GREEN RED
+<BR>
+GREEN = GREEN RED BLUE
+* DARK GREEN = GREEN BLUE RED
